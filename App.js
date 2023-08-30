@@ -11,7 +11,7 @@ export default function App() {
       >
         <View style={styles.content}>
           <View style={styles.avatar}>
-            {/* <SVGImg width={25} height={25} /> */}
+            <SVGImg style={styles.add} />
           </View>
           <Text style={styles.text}>Реєстрація</Text>
         </View>
