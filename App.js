@@ -1,6 +1,9 @@
 import { StatusBar } from "expo-status-bar";
+import React from "react";
+import { useState } from "react";
 import {
-  Platform,
+  KeyboardAvoidingView,
+  KeyboardAvoidingViewPlatform,
   TouchableOpacity,
   TextInput,
   ImageBackground,
@@ -11,81 +14,133 @@ import {
 import SVGImg from "./assets/images/add.svg";
 
 export default function App() {
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+      
   return (
     <View style={styles.container}>
       <ImageBackground
         source={require("./assets/images/PhotoBG.jpg")}
-        style={styles.image}
+        style={styles.imageBcg}
       >
-        <View style={styles.content}>
-          <View style={styles.title}>
-            <View style={styles.avatar}>
-              <SVGImg style={styles.add} />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.keybView}
+        >
+          <View style={styles.content}>
+            <View style={styles.title}>
+              <View style={styles.avatar}>
+                <SVGImg style={styles.add} />
+              </View>
+              <Text style={styles.text}>Реєстрація</Text>
             </View>
-            <Text style={styles.text}>Реєстрація</Text>
-          </View>
 
-          <View style={styles.form}>
-            <TextInput
-              style={styles.input}
-              placeholder="Логін"
-              placeholderTextColor="#BDBDBD"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Адреса електронної пошти"
-              placeholderTextColor="#BDBDBD"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Пароль"
-              placeholderTextColor="#BDBDBD"
-              secureTextEntry={true}
-            />
-            <TouchableOpacity style={styles.password} activeOpacity={0.75}>
-              <Text style={styles.showPassword}>Показати</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.btn} activeOpacity={0.75}>
-              <Text style={styles.textBtn}>Зареєструватися</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.registration}>
-              <Text style={styles.textRegistration} activeOpacity={0.75}>
-                Вже є акаунт? Увійти
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.form}>
+              <TextInput
+                style={styles.input}
+                placeholder="Логін"
+                placeholderTextColor="#BDBDBD"
+                onFocus={() => {
+                  setIsShowKeyboard(true);
+                }}
+                onSubmitEditing={() => {
+                  setIsShowKeyboard(false);
+                }}
+              />
+
+              <TextInput
+                style={styles.input}
+                placeholder="Адреса електронної пошти"
+                placeholderTextColor="#BDBDBD"
+                onFocus={() => {
+                  setIsShowKeyboard(true);
+                }}
+                onSubmitEditing={() => {
+                  setIsShowKeyboard(false);
+                }}
+              />
+
+              <TextInput
+                style={styles.input}
+                placeholder="Пароль"
+                placeholderTextColor="#BDBDBD"
+                secureTextEntry={true}
+                onFocus={() => {
+                  setIsShowKeyboard(true);
+                }}
+                onSubmitEditing={() => {
+                  setIsShowKeyboard(false);
+                }}
+              />
+
+              <TouchableOpacity style={styles.password} activeOpacity={0.75}>
+                <Text style={styles.showPassword}>Показати</Text>
+              </TouchableOpacity>
+            </View>
           </View>
+        </KeyboardAvoidingView>
+
+        <View
+          style={{
+            ...styles.bottomFieldWrap,
+            marginBottom: isShowKeyboard ? 70 : 0,
+          }}
+        >
+          <TouchableOpacity style={styles.btn} activeOpacity={0.75}>
+            <Text style={styles.textBtn}>Зареєструватися</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.registration}>
+            <Text style={styles.textRegistration} activeOpacity={0.75}>
+              Вже є акаунт? Увійти
+            </Text>
+          </TouchableOpacity>
         </View>
       </ImageBackground>
-      <StatusBar style="auto" />
+      {/* // <StatusBar style="auto" /> */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // keybView: {
+  //   marginBottom: 70,
+
+  // },
+  // keyboardView: {
+  //   flex: 1,
+  //   justifyContent: "flex-end",
+  // },
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    justifyContent: "flex-end",
   },
-  image: {
+  // isKeyboardView: {
+  //   flex: 1,
+  //   resizeMode: "cover",
+  //   justifyContent: "center",
+  // },
+  imageBcg: {
     flex: 1,
     resizeMode: "cover",
-    // position: 'absolute',
-    justifyContent: "flex-start",
+    justifyContent: "flex-end",
+  },
+  content: {
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+
+    // borderWidth: 3, // --------------------------------------
+    // borderBlockColor: "green", // -----------------------------
+
+    // justifyContent: "center",
   },
   avatar: {
     width: 120,
     height: 120,
     backgroundColor: "#f6f6f6",
     borderRadius: 16,
-    borderBlockColor: "black",
-    borderWidth: 1,
-    // position: "relative",
-    // bottom: 60,
+    position: "absolute",
 
-    marginTop: -60,
-    marginBottom: 32,
-
+    bottom: 100,
     justifyContent: "flex-end",
     alignItems: "flex-end",
 
@@ -103,18 +158,13 @@ const styles = StyleSheet.create({
     bottom: 16,
     left: 12,
   },
-  content: {
-    flex: 1,
-    backgroundColor: "white",
-    marginTop: 263,
+  title: {
+    position: "relative",
+    paddingTop: 92,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-
-    // alignItems: "center",
-    // justifyContent: "center",
-  },
-  title: {
-    alignItems: "center",
   },
   text: {
     marginBottom: 32,
@@ -123,11 +173,13 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   form: {
-    flex: 1,
     marginHorizontal: 16,
+
+    // borderWidth: 3, // --------------------------------------
+    // borderBlockColor: "red", // -----------------------------
   },
   input: {
-    marginBottom: 16,
+    marginBottom: 26,
     borderWidth: 1,
     borderColor: "#BDBDBD",
     backgroundColor: "#F6F6F6",
@@ -137,16 +189,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   password: {
+    position: "relative",
     alignItems: "flex-end",
-    marginTop: -52,
     marginRight: 16,
   },
   showPassword: {
+    position: "absolute",
+    bottom: 40,
     color: "#1B4371",
     fontSize: 16,
   },
   btn: {
-    marginTop: 60,
+    marginTop: 46,
+    marginHorizontal: 16,
     backgroundColor: "#FF6C00",
     height: 50,
     borderRadius: 100,
@@ -160,9 +215,15 @@ const styles = StyleSheet.create({
   registration: {
     marginTop: 16,
     alignItems: "center",
+    marginHorizontal: 16,
   },
   textRegistration: {
     color: "#1B4371",
     fontSize: 16,
+    marginBottom: 78,
+  },
+  bottomFieldWrap: {
+    backgroundColor: "#FFFFFF",
+    // marginBottom: 70,
   },
 });
