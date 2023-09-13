@@ -9,79 +9,108 @@ import {
   StyleSheet,
   Text,
   View,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
-import SVGImg from "../../assets/images/add.svg";
+
+const initialState = {
+  email: '',
+  password: '',
+}
 
 export default function LoginScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [state, setState] = useState(initialState);
+  
+  const keybordHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  }
 
   const handleFocus = () => {
     setIsShowKeyboard(true);
+    console.log("Focus >>>>> ")
+  };
+
+  const handleSubmit = () => {
+    setIsShowKeyboard(false);
+    console.log("Submit >>>> ", state);
+  }
+
+  const handleBtnPress = () => {
+    console.log("btnPress >>>>> ", state);
+    setState(initialState);
   };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require("../../assets/images/PhotoBG.jpg")}
-        style={styles.imageBcg}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.keybView}
+    <TouchableWithoutFeedback onPress={keybordHide}>
+      <View style={styles.container}>
+        <ImageBackground
+          source={require("../../assets/images/PhotoBG.jpg")}
+          style={styles.imageBcg}
         >
-          <View style={styles.content}>
-            <View style={styles.title}>
-              <Text style={styles.mainText}>Увійти</Text>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.keybView}
+          >
+            <View style={styles.content}>
+              <View style={styles.title}>
+                <Text style={styles.mainText}>Увійти</Text>
+              </View>
+
+              <View style={styles.form}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Адреса електронної пошти"
+                  placeholderTextColor="#BDBDBD"
+                  onFocus={handleFocus}
+                  value={state.email}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, email: value }))
+                  }
+                  onSubmitEditing={handleSubmit}
+                />
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Пароль"
+                  placeholderTextColor="#BDBDBD"
+                  secureTextEntry={true}
+                  onFocus={handleFocus}
+                  value={state.password}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, password: value }))
+                  }
+                  onSubmitEditing={handleSubmit}
+                />
+
+                <TouchableOpacity style={styles.password} activeOpacity={0.75}>
+                  <Text style={styles.showPassword}>Показати</Text>
+                </TouchableOpacity>
+              </View>
             </View>
+          </KeyboardAvoidingView>
 
-            <View style={styles.form}>
-              <TextInput
-                style={styles.input}
-                placeholder="Адреса електронної пошти"
-                placeholderTextColor="#BDBDBD"
-                onFocus={handleFocus}
-                onSubmitEditing={() => {
-                  setIsShowKeyboard(false);
-                }}
-              />
+          <View
+            style={{
+              ...styles.bottomFieldWrap,
+              marginBottom: isShowKeyboard ? 26 : 0,
+            }}
+          >
+            <TouchableOpacity style={styles.btn} activeOpacity={0.75} onPress={handleBtnPress}>
+              <Text style={styles.textBtn}>Увійти</Text>
+            </TouchableOpacity>
 
-              <TextInput
-                style={styles.input}
-                placeholder="Пароль"
-                placeholderTextColor="#BDBDBD"
-                secureTextEntry={true}
-                onFocus={handleFocus}
-                onSubmitEditing={() => {
-                  setIsShowKeyboard(false);
-                }}
-              />
-
-              <TouchableOpacity style={styles.password} activeOpacity={0.75}>
-                <Text style={styles.showPassword}>Показати</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity style={styles.registration}>
+              <Text style={styles.textRegistration} activeOpacity={0.75}>
+                Немає акаунту? Зареєструватися
+              </Text>
+            </TouchableOpacity>
           </View>
-        </KeyboardAvoidingView>
-
-        <View
-          style={{
-            ...styles.bottomFieldWrap,
-            marginBottom: isShowKeyboard ? 26 : 0,
-          }}
-        >
-          <TouchableOpacity style={styles.btn} activeOpacity={0.75}>
-            <Text style={styles.textBtn}>Увійти</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.registration}>
-            <Text style={styles.textRegistration} activeOpacity={0.75}>
-              Немає акаунту? Зареєструватися
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
-      {/* // <StatusBar style="auto" /> */}
-    </View>
+        </ImageBackground>
+        {/* // <StatusBar style="auto" /> */}
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

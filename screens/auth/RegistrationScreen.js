@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { useState } from "react";
 import {
+  TouchableWithoutFeedback,
   KeyboardAvoidingView,
   TouchableOpacity,
   TextInput,
@@ -10,99 +11,104 @@ import {
   Text,
   View,
 } from "react-native";
-
 import { AntDesign } from "@expo/vector-icons";
-import SVGImg from "../../assets/images/add.svg";
 
 export default function RegistrationScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
+    const keybordHide = () => {
+      setIsShowKeyboard(false);
+      Keyboard.dismiss();
+    };
+  
   const handleFocus = () => {
     setIsShowKeyboard(true);
   };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require("../../assets/images/PhotoBG.jpg")}
-        style={styles.imageBcg}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.keybView}
+    <TouchableWithoutFeedback onPress={keybordHide}>
+      <View style={styles.container}>
+        <ImageBackground
+          source={require("../../assets/images/PhotoBG.jpg")}
+          style={styles.imageBcg}
         >
-          <View style={styles.content}>
-            <View style={styles.title}>
-              <View style={styles.avatar}>
-                {/* <SVGImg style={styles.add} /> */}
-                <AntDesign
-                  style={styles.add}
-                  name="pluscircleo"
-                  size={24}
-                  color="black"
-                />
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.keybView}
+          >
+            <View style={styles.content}>
+              <View style={styles.title}>
+                <View style={styles.avatar}>
+                  {/* <SVGImg style={styles.add} /> */}
+                  <AntDesign
+                    style={styles.add}
+                    name="pluscircleo"
+                    size={24}
+                    color="black"
+                  />
+                </View>
+                <Text style={styles.mainText}>Реєстрація</Text>
               </View>
-              <Text style={styles.mainText}>Реєстрація</Text>
+
+              <View style={styles.form}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Логін"
+                  placeholderTextColor="#BDBDBD"
+                  onFocus={handleFocus}
+                  onSubmitEditing={() => {
+                    setIsShowKeyboard(false);
+                  }}
+                />
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Адреса електронної пошти"
+                  placeholderTextColor="#BDBDBD"
+                  onFocus={handleFocus}
+                  onSubmitEditing={() => {
+                    setIsShowKeyboard(false);
+                  }}
+                />
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Пароль"
+                  placeholderTextColor="#BDBDBD"
+                  secureTextEntry={true}
+                  onFocus={handleFocus}
+                  onSubmitEditing={() => {
+                    setIsShowKeyboard(false);
+                  }}
+                />
+
+                <TouchableOpacity style={styles.password} activeOpacity={0.75}>
+                  <Text style={styles.showPassword}>Показати</Text>
+                </TouchableOpacity>
+              </View>
             </View>
+          </KeyboardAvoidingView>
 
-            <View style={styles.form}>
-              <TextInput
-                style={styles.input}
-                placeholder="Логін"
-                placeholderTextColor="#BDBDBD"
-                onFocus={handleFocus}
-                onSubmitEditing={() => {
-                  setIsShowKeyboard(false);
-                }}
-              />
+          <View
+            style={{
+              ...styles.bottomFieldWrap,
+              marginBottom: isShowKeyboard ? 70 : 0,
+            }}
+          >
+            <TouchableOpacity style={styles.btn} activeOpacity={0.75}>
+              <Text style={styles.textBtn}>Зареєструватися</Text>
+            </TouchableOpacity>
 
-              <TextInput
-                style={styles.input}
-                placeholder="Адреса електронної пошти"
-                placeholderTextColor="#BDBDBD"
-                onFocus={handleFocus}
-                onSubmitEditing={() => {
-                  setIsShowKeyboard(false);
-                }}
-              />
-
-              <TextInput
-                style={styles.input}
-                placeholder="Пароль"
-                placeholderTextColor="#BDBDBD"
-                secureTextEntry={true}
-                onFocus={handleFocus}
-                onSubmitEditing={() => {
-                  setIsShowKeyboard(false);
-                }}
-              />
-
-              <TouchableOpacity style={styles.password} activeOpacity={0.75}>
-                <Text style={styles.showPassword}>Показати</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity style={styles.registration}>
+              <Text style={styles.textRegistration} activeOpacity={0.75}>
+                Вже є акаунт? Увійти
+              </Text>
+            </TouchableOpacity>
           </View>
-        </KeyboardAvoidingView>
-
-        <View
-          style={{
-            ...styles.bottomFieldWrap,
-            marginBottom: isShowKeyboard ? 70 : 0,
-          }}
-        >
-          <TouchableOpacity style={styles.btn} activeOpacity={0.75}>
-            <Text style={styles.textBtn}>Зареєструватися</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.registration}>
-            <Text style={styles.textRegistration} activeOpacity={0.75}>
-              Вже є акаунт? Увійти
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
-      {/* // <StatusBar style="auto" /> */}
-    </View>
+        </ImageBackground>
+        {/* // <StatusBar style="auto" /> */}
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
