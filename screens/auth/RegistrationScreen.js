@@ -2,7 +2,6 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { useState } from "react";
 import {
-  TouchableWithoutFeedback,
   KeyboardAvoidingView,
   TouchableOpacity,
   TextInput,
@@ -10,21 +9,38 @@ import {
   StyleSheet,
   Text,
   View,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 
+const initialState = {
+  login: "",
+  email: "",
+  password: "",
+};
+
 export default function RegistrationScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [state, setState] = useState(initialState);
 
-    const keybordHide = () => {
-      setIsShowKeyboard(false);
-      Keyboard.dismiss();
-    };
-  
-  const handleFocus = () => {
-    setIsShowKeyboard(true);
-  };
+     const keybordHide = () => {
+       setIsShowKeyboard(false);
+       Keyboard.dismiss();
+     };
 
+     const handleFocus = () => {
+       setIsShowKeyboard(true);
+     };
+
+     const handleSubmit = () => {
+       setIsShowKeyboard(false);
+     };
+
+     const handleBtnPress = () => {
+       console.log(state);
+       setState(initialState);
+     };
   return (
     <TouchableWithoutFeedback onPress={keybordHide}>
       <View style={styles.container}>
@@ -39,7 +55,6 @@ export default function RegistrationScreen() {
             <View style={styles.content}>
               <View style={styles.title}>
                 <View style={styles.avatar}>
-                  {/* <SVGImg style={styles.add} /> */}
                   <AntDesign
                     style={styles.add}
                     name="pluscircleo"
@@ -56,9 +71,11 @@ export default function RegistrationScreen() {
                   placeholder="Логін"
                   placeholderTextColor="#BDBDBD"
                   onFocus={handleFocus}
-                  onSubmitEditing={() => {
-                    setIsShowKeyboard(false);
-                  }}
+                  value={state.login}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, login: value }))
+                  }
+                  onSubmitEditing={handleSubmit}
                 />
 
                 <TextInput
@@ -66,9 +83,11 @@ export default function RegistrationScreen() {
                   placeholder="Адреса електронної пошти"
                   placeholderTextColor="#BDBDBD"
                   onFocus={handleFocus}
-                  onSubmitEditing={() => {
-                    setIsShowKeyboard(false);
-                  }}
+                  value={state.email}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, email: value }))
+                  }
+                  onSubmitEditing={handleSubmit}
                 />
 
                 <TextInput
@@ -77,9 +96,11 @@ export default function RegistrationScreen() {
                   placeholderTextColor="#BDBDBD"
                   secureTextEntry={true}
                   onFocus={handleFocus}
-                  onSubmitEditing={() => {
-                    setIsShowKeyboard(false);
-                  }}
+                  value={state.password}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, password: value }))
+                  }
+                  onSubmitEditing={handleSubmit}
                 />
 
                 <TouchableOpacity style={styles.password} activeOpacity={0.75}>
@@ -95,7 +116,11 @@ export default function RegistrationScreen() {
               marginBottom: isShowKeyboard ? 70 : 0,
             }}
           >
-            <TouchableOpacity style={styles.btn} activeOpacity={0.75}>
+            <TouchableOpacity
+              style={styles.btn}
+              activeOpacity={0.75}
+              onPress={handleBtnPress}
+            >
               <Text style={styles.textBtn}>Зареєструватися</Text>
             </TouchableOpacity>
 

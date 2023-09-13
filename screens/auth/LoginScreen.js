@@ -28,17 +28,15 @@ export default function LoginScreen() {
   }
 
   const handleFocus = () => {
-    setIsShowKeyboard(true);
-    console.log("Focus >>>>> ")
+    setIsShowKeyboard(true);    
   };
 
   const handleSubmit = () => {
-    setIsShowKeyboard(false);
-    console.log("Submit >>>> ", state);
+    setIsShowKeyboard(false);    
   }
 
   const handleBtnPress = () => {
-    console.log("btnPress >>>>> ", state);
+    console.log(state);
     setState(initialState);
   };
 
