@@ -1,6 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import {
   KeyboardAvoidingView,
   TouchableOpacity,
@@ -20,27 +21,34 @@ const initialState = {
   password: "",
 };
 
-export default function RegistrationScreen() {
+export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
+  // const navigation = useNavigation();
 
-     const keybordHide = () => {
-       setIsShowKeyboard(false);
-       Keyboard.dismiss();
-     };
+  const keybordHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
 
-     const handleFocus = () => {
-       setIsShowKeyboard(true);
-     };
+  const handleFocus = () => {
+    setIsShowKeyboard(true);
+  };
 
-     const handleSubmit = () => {
-       setIsShowKeyboard(false);
-     };
+  const handleSubmit = () => {
+    setIsShowKeyboard(false);
+  };
 
-     const handleBtnPress = () => {
-       console.log(state);
-       setState(initialState);
-     };
+  const handleLoginBtnPress = () => {
+    console.log("LoginBtnPress >>>>>> ");
+    navigation.navigate("Login");
+  };
+
+  const handleRegisterBtnPress = () => {
+    console.log(state);
+    setState(initialState);
+  };
+
   return (
     <TouchableWithoutFeedback onPress={keybordHide}>
       <View style={styles.container}>
@@ -119,14 +127,20 @@ export default function RegistrationScreen() {
             <TouchableOpacity
               style={styles.btn}
               activeOpacity={0.75}
-              onPress={handleBtnPress}
+              onPress={handleRegisterBtnPress}
             >
               <Text style={styles.textBtn}>Зареєструватися</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.registration}>
-              <Text style={styles.textRegistration} activeOpacity={0.75}>
-                Вже є акаунт? Увійти
+              <Text style={styles.textRegistration}>
+                Вже є акаунт?{" "}
+                <Text
+                  style={styles.textRegistration}
+                  onPress={handleLoginBtnPress}
+                >
+                  Увійти
+                </Text>
               </Text>
             </TouchableOpacity>
           </View>

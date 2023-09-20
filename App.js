@@ -7,6 +7,7 @@ import { useFonts } from "expo-font";
 import { StyleSheet } from "react-native";
 import LoginScreen from "./screens/auth/LoginScreen";
 import RegistrationScreen from "./screens/auth/RegistrationScreen";
+import CreatePostsScreen from "./screens/CreatePostsScreen";
 import PostsScreen from "./screens/PostsScreen";
 
 const MainStack = createStackNavigator();
@@ -22,16 +23,28 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <MainStack.Navigator>
-        <MainStack.Screen name="Registration" component={RegistrationScreen} />
-        <MainStack.Screen name="Login" component={LoginScreen} />
+      <MainStack.Navigator initialRouteName="Registration">
+        <MainStack.Screen
+          name="Registration"
+          component={RegistrationScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
         <MainStack.Screen name="Post" component={PostsScreen} />
+        <MainStack.Screen name="CreatePosts" component={CreatePostsScreen} />
       </MainStack.Navigator>
 
       {/* <LoginScreen />
       {/* // <RegistrationScreen />
-      // <PostsScreen /> */} 
-
+      // <PostsScreen /> */}
     </NavigationContainer>
   );
 }
