@@ -13,7 +13,7 @@ export default function App() {
     "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
     "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
   });
-  const routing = useRoute(null);
+  const routing = useRoute(false);
   if (!fontsLoaded) {
     return null;
   }

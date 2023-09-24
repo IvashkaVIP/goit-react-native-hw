@@ -35,6 +35,7 @@ export default function LoginScreen({navigation}) {
 
   const handleSubmit = () => {
     setIsShowKeyboard(false);    
+    navigation.navigate("Home");
   }
 
   const handleLoginBtnPress = () => {

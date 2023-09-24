@@ -37,6 +37,7 @@ export default function RegistrationScreen({ navigation }) {
 
   const handleSubmit = () => {
     setIsShowKeyboard(false);
+    
   };
 
   const handleLoginBtnPress = () => {
@@ -47,6 +48,7 @@ export default function RegistrationScreen({ navigation }) {
   const handleRegisterBtnPress = () => {
     console.log(state);
     setState(initialState);
+    navigation.navigate("Home");
   };
 
   return (
