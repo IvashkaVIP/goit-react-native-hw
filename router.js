@@ -30,8 +30,8 @@ export const useRoute = (isAuth) => {
           name="Home"
           component={Home}
           options={{
-            headerShown: false,
-          }}
+              headerShown: false,
+        }}
         />
       </MainStack.Navigator>
     );

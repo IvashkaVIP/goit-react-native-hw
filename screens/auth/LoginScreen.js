@@ -35,13 +35,14 @@ export default function LoginScreen({navigation}) {
 
   const handleSubmit = () => {
     setIsShowKeyboard(false);    
-    navigation.navigate("Home");
+    
   }
 
   const handleLoginBtnPress = () => {
     console.log("LoginBtnPress >>>>>> ");
     console.log(state);
     setState(initialState);
+    navigation.navigate("Home");
     
   };
 
