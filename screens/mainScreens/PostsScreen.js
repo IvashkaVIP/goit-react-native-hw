@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { View, Text, StyleSheet } from "react-native";
 import { Ionicons, AntDesign, Feather } from "@expo/vector-icons";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
 
 import CreatePostsScreen from "./CreatePostsScreen";
 // import PostsScreen from "./PostsScreen";
