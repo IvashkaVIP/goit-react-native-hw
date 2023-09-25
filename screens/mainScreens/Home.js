@@ -20,10 +20,19 @@ export default function Home() {
     <HomeTabs.Navigator
       screenOptions={() => ({
         tabBarShowLabel: false,
-        tabBarStyle: { height: 83 },
         tabBarInactiveTintColor: "rgba(33, 33, 33, 0.8)",
         tabBarActiveTintColor: "rgba(255, 00, 00, 0.8)",
+
+        tabBarStyle: {
+          paddingTop: 9,
+          paddingHorizontal: 60,
+          height: 83,
+          borderTopColor: "#BDBDBD",
+          borderTopWidth: 1,
+        },
+    
       })}
+      
     >
       <HomeTabs.Screen
         options={({ route }) => ({

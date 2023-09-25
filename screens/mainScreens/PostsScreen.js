@@ -35,51 +35,7 @@ export default function PostsScreen () {
       <Text>PostsScreen</Text>
     </View>
   );
-    
       
-
-      /* <MainTab.Navigator>
-        screenOptions=
-        {{
-          tabBarShowLabel: false,
-          tabBarStyle: { height: 83 },
-        }}
-        
-        <MainTab.Screen
-          options={{
-            tabBarIcon: (focused, color, size) => (
-              
-            ),
-          }}
-          name="Posts"
-          component={PostsScreen}
-        />
-        <MainTab.Screen
-          options={{
-            tabBarIcon: (focused, color, size) => (
-              <TouchableOpacity
-                style={styles.btn}
-                activeOpacity={0.75}
-                onPress={() => navigation.navigate("CreatePosts")}
-              >
-                <Feather name="plus" size={13} color="#FFFFFF" />
-              </TouchableOpacity>
-            ),
-          }}
-          name="CreatePosts"
-          component={CreatePostsScreen}
-        />
-        <MainTab.Screen
-          options={{
-            tabBarIcon: (focused, color, size) => (
-              <Feather name="user" size={24} color={color} />
-            ),
-          }}
-          name="Profile"
-          component={ProfileScreen}
-        />
-      </MainTab.Navigator> */
-    
   
 };
 const styles = StyleSheet.create({
