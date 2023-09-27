@@ -9,20 +9,19 @@ export const CreatePostsScreen = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: "Публікації",
+      tabBarStyle: { display: "none" },
+      headerTitle: "Створити публікацію",
       headerTintColor: "#212121",
       headerTitleStyle: { fontSize: 17, fontFamily: "Roboto-Medium" },
       headerTitleAlign: "center",
-      headerRight: () => (
-        <Ionicons
-          onPress={() => {
-            navigation.navigate("Login");
-          }}
-          style={{ marginRight: 10 }}
-          name="exit-outline"
-          size={24}
-          color="#BDBDBD"
-        />
+      headerLeft: (focused, size, color) => (
+          <Feather
+            style={{ marginLeft: 16, }}
+            onPress={() => navigation.navigate("Posts")}
+            name="arrow-left"
+            size={24}
+            color="rgba(33, 33, 33, 0.8)"
+          />       
       ),
     });
   }, []);

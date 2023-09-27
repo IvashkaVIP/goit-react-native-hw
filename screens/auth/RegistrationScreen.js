@@ -1,7 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 import {
   KeyboardAvoidingView,
   TouchableOpacity,
