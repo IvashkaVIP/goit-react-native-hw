@@ -1,6 +1,12 @@
 import React, { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { TouchableOpacity, StyleSheet, Text, View } from "react-native";
+import {
+  TouchableOpacity,
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+} from "react-native";
 import { FontAwesome, Ionicons, AntDesign, Feather } from "@expo/vector-icons";
 
 export const CreatePostsScreen = () => {
@@ -39,6 +45,44 @@ export const CreatePostsScreen = () => {
       </View>
       <View style={styles.textWrap}>
         <Text style={styles.textFoto}>Завантажте фото</Text>
+        <TextInput
+          style={styles.textTitle}
+          placeholder="Назва..."
+          placeholderTextColor="#BDBDBD"
+        />
+
+        <View style={styles.textArea}>
+          <TextInput
+            style={{ fontSize: 16, paddingLeft: 25, paddingTop: 16 }}
+            placeholder="Місцевість..."
+            placeholderTextColor="#BDBDBD"
+          />
+          <Feather
+            name="map-pin"
+            size={20}
+            color="#BDBDBD"
+            style={{ position: "absolute", bottom: 10 }}
+          />
+        </View>
+
+        <TouchableOpacity
+          // onPress={}
+          activeOpacity={0.8}
+          style={styles.publishBtn}
+        >
+          <Text style={styles.textPublishBtn}>Опубліковати</Text>
+        </TouchableOpacity>
+
+
+        <TouchableOpacity
+          // onPress={deletePhoto}
+          style={styles.deleteBtn}
+        >
+          <Feather name="trash-2" size={24} color="#BDBDBD" />
+        </TouchableOpacity>
+
+        
+
       </View>
     </View>
   );
@@ -55,11 +99,13 @@ const styles = StyleSheet.create({
   contentBlock: {
     height: 267,
     width: "100%",
-    backgroundColor: "red",
+    backgroundColor: "#F6F6F6",
     borderRadius: 8,
+    borderColor: "#E8E8E8",
+    borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 8
+    marginBottom: 8,
   },
   cameraWrap: {
     borderRadius: 50,
@@ -71,11 +117,63 @@ const styles = StyleSheet.create({
   },
   textWrap: {
     width: "100%",
-    justifyContent: "flex-start"
+    justifyContent: "flex-start",
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    lineHeight: 19,
   },
   textFoto: {
+    fontFamily: "Roboto-Regular",
+    fontStyle: "normal",
     fontSize: 16,
+    lineHeight: 19,
     color: "#BDBDBD",
+    marginBottom: 32,
+  },
+  textTitle: {
+    color: "#BDBDBD",
+    marginBottom: 16,
+    height: 50,
+    borderBottomWidth: 1,
+    borderStyle: "solid",
+    borderBottomColor: "#E8E8E8",
+    fontSize: 16,
+  },
+  textArea: {
+    position: "relative",
+    color: "#BDBDBD",
+    height: 50,
+    marginBottom: 32,
+    borderBottomWidth: 1,
+    borderStyle: "solid",
+    borderBottomColor: "#E8E8E8",
+    fontSize: 16,
+  },
+  publishBtn: {
+    marginBottom: 80,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 51,
+    backgroundColor: "#F6F6F6",
+    borderRadius: 100,
+  },
+  textPublishBtn: {
+    fontFamily: "Roboto-Regular",
+    fontStyle: "normal",
+    fontSize: 16,
+    lineHeight: 19,
+    color: "#BDBDBD",
+  },
+  deleteBtn: {
+    marginBottom: 34,
+    width: 70,
+    height: 40,
+    marginLeft: "auto",
+    marginRight: "auto",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F6F6F6",
+    borderRadius: 20,
   },
 });
 
