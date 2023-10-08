@@ -3,80 +3,57 @@ import { useNavigation } from "@react-navigation/native";
 import { Ionicons, AntDesign, Feather } from "@expo/vector-icons";
 import {
   KeyboardAvoidingView,
-  TouchableOpacity,
-  TextInput,
   ImageBackground,
   StyleSheet,
   Text,
   View,
-  Keyboard,
-  TouchableWithoutFeedback,
-} from "react-native";
+  } from "react-native";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
     navigation.setOptions({
-      
       headerShown: false,
-      
     });
   }, []);
 
   return (
-    // <View style={styles.container}>
-    //   <Ionicons
-    //       onPress={() => {
-    //         navigation.navigate("Login");
-    //       }}
-    //       style={{ marginRight: 10 }}
-    //       name="exit-outline"
-    //       size={24}
-    //       color="#BDBDBD"
-    //     />
-    //   <Text>ProfileScreen</Text>
-    // </View>
-    // <TouchableWithoutFeedback >
-      <View style={styles.container}>
-        <ImageBackground
-          source={require("../../assets/images/PhotoBG.jpg")}
-          style={styles.imageBcg}
+    <View style={styles.container}>
+      <ImageBackground
+        source={require("../../assets/images/PhotoBG.jpg")}
+        style={styles.imageBcg}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.keybView}
         >
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.keybView}
-          >
-            <View style={styles.content}>
-              <View style={styles.title}>
-                <View style={styles.avatar}>
-                  <AntDesign
-                    style={styles.add}
-                    name="pluscircleo"
-                    size={24}
-                    color="black"
-                  />
+          <View style={styles.content}>
+            <View style={styles.title}>
+              <View style={styles.avatar}>
+                <AntDesign
+                  style={styles.add}
+                  name="pluscircleo"
+                  size={24}
+                  color="black"
+                />
               </View>
-              
+
               <Ionicons
                 onPress={() => {
                   navigation.navigate("Login");
                 }}
                 style={styles.logoutIcon}
-          name="exit-outline"
-          size={24}
-          color="#BDBDBD"
-        />
-                <Text style={styles.mainText}>Ім'я користувача</Text>
-              </View>
-
-              
+                name="exit-outline"
+                size={24}
+                color="#BDBDBD"
+              />
+              <Text style={styles.mainText}>Ім'я користувача</Text>
             </View>
-          </KeyboardAvoidingView>
-
-          
-        </ImageBackground>
-         </View>
+          </View>
+        </KeyboardAvoidingView>
+      </ImageBackground>
+    </View>
     // </TouchableWithoutFeedback>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
-import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
@@ -8,10 +7,8 @@ import CreatePostsScreen from "./CreatePostsScreen";
 import PostsScreen from "./PostsScreen";
 import ProfileScreen from "./ProfileScreen";
 
-import { Ionicons, AntDesign, Feather } from "@expo/vector-icons";
-import { Directions } from "react-native-gesture-handler";
+import { AntDesign, Feather } from "@expo/vector-icons";
 
-const HomeStack = createStackNavigator();
 const HomeTabs = createBottomTabNavigator();
 
 export default function Home() {
@@ -66,11 +63,12 @@ export default function Home() {
         name="CreatePosts"
         component={CreatePostsScreen}
       />
+
       <HomeTabs.Screen
         options={({ route }) => ({
-          tabBarIcon: ({ focused, size, color }) => (
-            <Feather name="user" size={24} color="#212121" />
-          ),
+          tabBarIcon: ({ focused, size, color }) => {
+            return <Feather name="user" size={24} color="#212121" />;
+          },
         })}
         name="Profile"
         component={ProfileScreen}

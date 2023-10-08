@@ -1,12 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { View, Text, StyleSheet } from "react-native";
-import { Ionicons, AntDesign, Feather } from "@expo/vector-icons";
-
-
-import CreatePostsScreen from "./CreatePostsScreen";
-// import PostsScreen from "./PostsScreen";
-import ProfileScreen from "./ProfileScreen";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function PostsScreen () {
   const navigation = useNavigation();
@@ -28,15 +23,13 @@ export default function PostsScreen () {
       />
     ),
   });},[])
-  
-   
+     
   return (
     <View style={styles.container}>
       <Text>PostsScreen</Text>
     </View>
   );
-      
-  
+    
 };
 const styles = StyleSheet.create({
   container: {

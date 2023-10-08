@@ -7,7 +7,7 @@ import {
   View,
   TextInput,
 } from "react-native";
-import { FontAwesome, Ionicons, AntDesign, Feather } from "@expo/vector-icons";
+import { FontAwesome, Feather } from "@expo/vector-icons";
 
 export const CreatePostsScreen = () => {
   const navigation = useNavigation();
