@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   TouchableOpacity,
@@ -8,10 +8,25 @@ import {
   TextInput,
 } from "react-native";
 import { FontAwesome, Feather } from "@expo/vector-icons";
-import {Camera} from "expo-camera"
+import { Camera } from "expo-camera";
 
 export const CreatePostsScreen = () => {
   const navigation = useNavigation();
+  const [photo, setPhoto] = useState(null);
+  const [urlPhoto, setUrlPhoto] = useState("");
+
+  const takePhoto = async () => {
+    setUrlPhoto((await photo.takePictureAsync()).uri);
+    console.log("takePhoto ->>>>>>> ", urlPhoto);
+  };
+
+  const publishPhoto = () => {
+    if (urlPhoto) navigation.navigate("Posts", {urlPhoto});
+  };
+
+  const deletePhoto = () => {
+    setUrlPhoto("");
+  };
 
   useEffect(() => {
     navigation.setOptions({
@@ -40,8 +55,8 @@ export const CreatePostsScreen = () => {
   return (
     <View style={styles.container}>
       {/* --------------------------------------  блок камера  */}
-      <Camera style={styles.camera}>
-        <TouchableOpacity onPress={() => {}} style={styles.cameraBtn}>
+      <Camera style={styles.camera} ref={setPhoto}>
+        <TouchableOpacity onPress={takePhoto} style={styles.cameraBtn}>
           <FontAwesome name="camera" size={24} color="#BDBDBD" />
         </TouchableOpacity>
       </Camera>
@@ -57,7 +72,7 @@ export const CreatePostsScreen = () => {
 
         <View style={styles.textArea}>
           <TextInput
-            style={{...styles.textTitle, paddingLeft: 25 }}
+            style={{ ...styles.textTitle, paddingLeft: 25 }}
             placeholder="Місцевість..."
             placeholderTextColor="#BDBDBD"
           />
@@ -70,18 +85,34 @@ export const CreatePostsScreen = () => {
         </View>
 
         <TouchableOpacity
-          // onPress={}
+          onPress={publishPhoto}
           activeOpacity={0.8}
-          style={styles.publishBtn}
+          style={
+            urlPhoto
+              ? { ...styles.publishBtn, backgroundColor: "#FF6C00" }
+              : styles.publishBtn
+          }
         >
-          <Text style={styles.textPublishBtn}>Опубліковати</Text>
+          <Text
+            style={
+              urlPhoto
+                ? { ...styles.textPublishBtn, color: "white" }
+                : styles.textPublishBtn
+            }
+          >
+            Опубліковати
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          // onPress={deletePhoto}
-          style={styles.deleteBtn}
+          onPress={deletePhoto}
+          style={
+            urlPhoto
+              ? { ...styles.deleteBtn, backgroundColor: "#FF6C00" }
+              : styles.deleteBtn
+          }
         >
-          <Feather name="trash-2" size={24} color="#BDBDBD" />
+          <Feather name="trash-2" size={24} color={urlPhoto ? "white" : "#BDBDBD"} />
         </TouchableOpacity>
       </View>
     </View>
@@ -156,7 +187,7 @@ const styles = StyleSheet.create({
   textPublishBtn: {
     fontFamily: "Roboto-Regular",
     fontStyle: "normal",
-    fontSize: 16,
+    fontSize: 20,
     lineHeight: 19,
     color: "#BDBDBD",
   },
