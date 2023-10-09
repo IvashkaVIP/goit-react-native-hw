@@ -8,6 +8,7 @@ import {
   TextInput,
 } from "react-native";
 import { FontAwesome, Feather } from "@expo/vector-icons";
+import {Camera} from "expo-camera"
 
 export const CreatePostsScreen = () => {
   const navigation = useNavigation();
@@ -38,11 +39,14 @@ export const CreatePostsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.contentBlock}>
-        <View style={styles.cameraWrap}>
+      {/* --------------------------------------  блок камера  */}
+      <Camera style={styles.camera}>
+        <TouchableOpacity onPress={() => {}} style={styles.cameraBtn}>
           <FontAwesome name="camera" size={24} color="#BDBDBD" />
-        </View>
-      </View>
+        </TouchableOpacity>
+      </Camera>
+      {/* ------------------------------------------------------- */}
+
       <View style={styles.textWrap}>
         <Text style={styles.textFoto}>Завантажте фото</Text>
         <TextInput
@@ -53,7 +57,7 @@ export const CreatePostsScreen = () => {
 
         <View style={styles.textArea}>
           <TextInput
-            style={{ fontSize: 16, paddingLeft: 25, paddingTop: 16 }}
+            style={{...styles.textTitle, paddingLeft: 25 }}
             placeholder="Місцевість..."
             placeholderTextColor="#BDBDBD"
           />
@@ -73,16 +77,12 @@ export const CreatePostsScreen = () => {
           <Text style={styles.textPublishBtn}>Опубліковати</Text>
         </TouchableOpacity>
 
-
         <TouchableOpacity
           // onPress={deletePhoto}
           style={styles.deleteBtn}
         >
           <Feather name="trash-2" size={24} color="#BDBDBD" />
         </TouchableOpacity>
-
-        
-
       </View>
     </View>
   );
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 32,
   },
-  contentBlock: {
+  camera: {
     height: 267,
     width: "100%",
     backgroundColor: "#F6F6F6",
@@ -107,11 +107,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 8,
   },
-  cameraWrap: {
+  cameraBtn: {
     borderRadius: 50,
     width: 60,
     height: 60,
     backgroundColor: "white",
+    opacity: 0.3,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -123,15 +124,15 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   textFoto: {
+    color: "#BDBDBD",
     fontFamily: "Roboto-Regular",
     fontStyle: "normal",
     fontSize: 16,
     lineHeight: 19,
-    color: "#BDBDBD",
     marginBottom: 32,
   },
   textTitle: {
-    color: "#BDBDBD",
+    color: "#212121",
     marginBottom: 16,
     height: 50,
     borderBottomWidth: 1,
@@ -141,13 +142,8 @@ const styles = StyleSheet.create({
   },
   textArea: {
     position: "relative",
-    color: "#BDBDBD",
     height: 50,
     marginBottom: 32,
-    borderBottomWidth: 1,
-    borderStyle: "solid",
-    borderBottomColor: "#E8E8E8",
-    fontSize: 16,
   },
   publishBtn: {
     marginBottom: 80,
