@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { View, Text, StyleSheet, Image } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
 import { FlatList } from "react-native-gesture-handler";
 // import { Image } from "expo-image";
 
@@ -12,7 +12,7 @@ export default function PostsScreen({ route }) {
   useEffect(() => {
     if (route.params) setPosts((prevState) => [...prevState, route.params]);
   }, [route.params]);
-
+ 
   useEffect(() => {
     navigation.setOptions({
       headerTitle: "Публікації",
@@ -33,7 +33,7 @@ export default function PostsScreen({ route }) {
     });
   }, []);
 
-  // console.log(posts[0].urlPhoto);
+  console.log("77777777777777777777777777777777                      ",posts[0]);
 
   return (
     <View style={styles.container}>
@@ -41,11 +41,38 @@ export default function PostsScreen({ route }) {
         data={posts}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
-          <View>
-            <Image source={{ uri: item.urlPhoto }} style={styles.image} />
-            <Text style={styles.textPhoto}>Назва Фото</Text>
-          </View>
+          <View style={{marginBottom: 32}}>
+            <Image source={{ uri: item.url }} style={styles.image} />
+            <Text style={styles.textPhoto}>{item.name}</Text>
 
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <View style={{ flexDirection: "row" }}>
+                <Feather
+                  name="message-circle"
+                  size={24}
+                  color="#BDBDBD"
+                  style={{
+                    marginRight: 10,
+                  }}
+                />
+                <Text style={styles.textPhoto}>0</Text>
+              </View>
+
+              <View style={{flexDirection: "row"}}>
+              <Feather
+                name="map-pin"
+                size={24}
+                color="#BDBDBD"
+                style={{ marginRight: 10 }}
+              />
+              <Text style={{...styles.textPhoto, textDecorationLine: "underline"}}>
+                {item.description}
+                </Text>
+                </View>
+            </View>
+          </View>
         )}
       />
     </View>
@@ -71,6 +98,6 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontSize: 16,
     lineHeight: 19,
-    marginBottom: 32,
+    marginBottom: 8,
   },
 });

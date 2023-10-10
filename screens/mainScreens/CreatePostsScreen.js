@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   TouchableOpacity,
@@ -11,51 +11,67 @@ import { FontAwesome, Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
 
-
 const initialStatePhoto = {
   photo: null,
   url: "",
   name: "",
-  map: "",
+  description: "",
+  location: {
+    latitude: null,
+    longitude: null,
+  },
 };
 
 export const CreatePostsScreen = () => {
+  const cameraRef = useRef(null);
   const navigation = useNavigation();
-  const [photo, setPhoto] = useState(null);
-  const [urlPhoto, setUrlPhoto] = useState("");
-  const [namePhoto, setNamePhoto] = useState("");
-  const [mapPhoto, setMapPhoto] = useState("");
+  // const [photo, setPhoto] = useState(null);
+  // const [urlPhoto, setUrlPhoto] = useState("");
+  // const [namePhoto, setNamePhoto] = useState("");
+  // const [mapPhoto, setMapPhoto] = useState("");
+
+  const [statePhoto, setStatePhoto] = useState(initialStatePhoto);
 
   // -----------------------------   checking Location Permission
-   useEffect(() => {
-     (async () => {
-       let { status } = await Location.requestForegroundPermissionsAsync();
-       if (status !== "granted") {
-         setErrorMsg("Permission to access location was denied");
-         return;
-       }
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
       //  let location = await Location.getCurrentPositionAsync({});
       //  setLocation(location);
-     })();
-   }, []);
+    })();
+  }, []);
 
   const takePhoto = async () => {
+    const newUrl = (await cameraRef.current.takePictureAsync()).uri;
+    const newLocation = await Location.getCurrentPositionAsync();
 
-    setUrlPhoto((await photo.takePictureAsync()).uri);
-    const location = await Location.getCurrentPositionAsync();
-    // console.log("takePhoto ->>>>>>> ", urlPhoto);
-    console.log("location ->>>>>>> ", location.coords.latitude);
-    console.log("location ->>>>>>> ", location.coords.longitude);
+    setStatePhoto((prevState) => ({
+      ...prevState,
+      url: newUrl,
+      location: {
+        latitude: newLocation.coords.latitude,
+        longitude: newLocation.coords.longitude,
+      },
+    }));
+
+    // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>            ", statePhoto);
+    // console.log("takePhoto ->>>>>>> ", newUrl);
+    // console.log("latitude ->>>>>>> ", location.coords.latitude);
+    // console.log("longitude ->>>>>>> ", location.coords.longitude);
   };
 
   const publishPhoto = () => {
-    if (!namePhoto) setNamePhoto("noName");
-    if (!mapPhoto) setMapPhoto("noMap");
-    if (urlPhoto) navigation.navigate("Posts", {urlPhoto, namePhoto, mapPhoto});
+    // if (!namePhoto) setNamePhoto("noName");
+    // if (!mapPhoto) setMapPhoto("noMap");
+    if (statePhoto.url) navigation.navigate("Posts", statePhoto);
   };
 
   const deletePhoto = () => {
-    setUrlPhoto("");
+    setStatePhoto(initialStatePhoto);
   };
 
   useEffect(() => {
@@ -82,10 +98,14 @@ export const CreatePostsScreen = () => {
     });
   }, []);
 
+  // const handleSubmitNamePhoto = (event) => {
+  //   console.log(event.nativeEvent.text);
+  // };
+
   return (
     <View style={styles.container}>
       {/* --------------------------------------  блок камера  */}
-      <Camera style={styles.camera} ref={setPhoto}>
+      <Camera style={styles.camera} ref={cameraRef}>
         <TouchableOpacity onPress={takePhoto} style={styles.cameraBtn}>
           <FontAwesome name="camera" size={24} color="#BDBDBD" />
         </TouchableOpacity>
@@ -98,11 +118,12 @@ export const CreatePostsScreen = () => {
           style={styles.textTitle}
           placeholder="Назва..."
           placeholderTextColor="#BDBDBD"
-          // value={state.namePhoto}
-          // onChangeText={(value) =>
-          //   setState((prevState) => ({ ...prevState, password: value }))
-          // }
-          // onSubmitEditing={handleSubmit}
+          onSubmitEditing={(event) =>
+            setStatePhoto((prevState) => ({
+              ...prevState,
+              name: event.nativeEvent.text,
+            }))
+          }
         />
 
         <View style={styles.textArea}>
@@ -110,6 +131,11 @@ export const CreatePostsScreen = () => {
             style={{ ...styles.textTitle, paddingLeft: 25 }}
             placeholder="Місцевість..."
             placeholderTextColor="#BDBDBD"
+            onSubmitEditing={(event) =>
+              setStatePhoto((prevState) => ({
+                ...prevState, description: event.nativeEvent.text
+              }))
+            }
           />
           <Feather
             name="map-pin"
@@ -123,14 +149,14 @@ export const CreatePostsScreen = () => {
           onPress={publishPhoto}
           activeOpacity={0.8}
           style={
-            urlPhoto
+            statePhoto.url
               ? { ...styles.publishBtn, backgroundColor: "#FF6C00" }
               : styles.publishBtn
           }
         >
           <Text
             style={
-              urlPhoto
+              statePhoto.url
                 ? { ...styles.textPublishBtn, color: "white" }
                 : styles.textPublishBtn
             }
@@ -142,7 +168,7 @@ export const CreatePostsScreen = () => {
         <TouchableOpacity
           onPress={deletePhoto}
           style={
-            urlPhoto
+            statePhoto.url
               ? { ...styles.deleteBtn, backgroundColor: "#FF6C00" }
               : styles.deleteBtn
           }
@@ -150,7 +176,7 @@ export const CreatePostsScreen = () => {
           <Feather
             name="trash-2"
             size={24}
-            color={urlPhoto ? "white" : "#BDBDBD"}
+            color={statePhoto.url ? "white" : "#BDBDBD"}
           />
         </TouchableOpacity>
       </View>
