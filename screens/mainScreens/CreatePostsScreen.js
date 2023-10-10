@@ -9,19 +9,49 @@ import {
 } from "react-native";
 import { FontAwesome, Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
+import * as Location from "expo-location";
+
+
+const initialStatePhoto = {
+  photo: null,
+  url: "",
+  name: "",
+  map: "",
+};
 
 export const CreatePostsScreen = () => {
   const navigation = useNavigation();
   const [photo, setPhoto] = useState(null);
   const [urlPhoto, setUrlPhoto] = useState("");
+  const [namePhoto, setNamePhoto] = useState("");
+  const [mapPhoto, setMapPhoto] = useState("");
+
+  // -----------------------------   checking Location Permission
+   useEffect(() => {
+     (async () => {
+       let { status } = await Location.requestForegroundPermissionsAsync();
+       if (status !== "granted") {
+         setErrorMsg("Permission to access location was denied");
+         return;
+       }
+      //  let location = await Location.getCurrentPositionAsync({});
+      //  setLocation(location);
+     })();
+   }, []);
 
   const takePhoto = async () => {
+
     setUrlPhoto((await photo.takePictureAsync()).uri);
-    console.log("takePhoto ->>>>>>> ", urlPhoto);
+    const location = await Location.getCurrentPositionAsync();
+    // console.log("takePhoto ->>>>>>> ", urlPhoto);
+    console.log("location ->>>>>>> ", location.coords.latitude);
+    console.log("location ->>>>>>> ", location.coords.longitude);
   };
 
   const publishPhoto = () => {
-    if (urlPhoto) navigation.navigate("Posts", {urlPhoto});
+    if (!namePhoto) setNamePhoto("noName");
+    if (!mapPhoto) setMapPhoto("noMap");
+    if (urlPhoto) navigation.navigate("Posts", {urlPhoto, namePhoto, mapPhoto});
   };
 
   const deletePhoto = () => {
@@ -68,6 +98,11 @@ export const CreatePostsScreen = () => {
           style={styles.textTitle}
           placeholder="Назва..."
           placeholderTextColor="#BDBDBD"
+          // value={state.namePhoto}
+          // onChangeText={(value) =>
+          //   setState((prevState) => ({ ...prevState, password: value }))
+          // }
+          // onSubmitEditing={handleSubmit}
         />
 
         <View style={styles.textArea}>
@@ -112,7 +147,11 @@ export const CreatePostsScreen = () => {
               : styles.deleteBtn
           }
         >
-          <Feather name="trash-2" size={24} color={urlPhoto ? "white" : "#BDBDBD"} />
+          <Feather
+            name="trash-2"
+            size={24}
+            color={urlPhoto ? "white" : "#BDBDBD"}
+          />
         </TouchableOpacity>
       </View>
     </View>

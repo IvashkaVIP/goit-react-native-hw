@@ -42,8 +42,10 @@ export default function PostsScreen({ route }) {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View>
-            <Image source={{uri : item.urlPhoto}} style={{width: 100, height: 100,}} />
+            <Image source={{ uri: item.urlPhoto }} style={styles.image} />
+            <Text style={styles.textPhoto}>Назва Фото</Text>
           </View>
+
         )}
       />
     </View>
@@ -53,6 +55,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    // alignItems: "center",
+    alignItems: "center",
+    backgroundColor: "aqua",
+    paddingHorizontal: 16,
+  },
+  image: {
+    width: 343,
+    height: 240,
+    marginBottom: 8,
+    borderRadius: 8,
+  },
+  textPhoto: {
+    color: "#212121",
+    fontFamily: "Roboto-Regular",
+    fontStyle: "normal",
+    fontSize: 16,
+    lineHeight: 19,
+    marginBottom: 32,
   },
 });
