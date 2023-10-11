@@ -1,29 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { FlatList } from "react-native-gesture-handler";
-import { CommentsScreen } from "../nestedScreens/CommentsScreen";
-import { MapScreen } from "../nestedScreens/MapScreen";
-// import { Image } from "expo-image";
 
-// import { NavigationContainer } from "@react-navigation/native";
-// import { createStackNavigator } from "@react-navigation/stack";
-
-// const Stack = createStackNavigator();
-
-// function NestedScreens() {
-//   return (
-//     <Stack.Navigator>
-//       <Stack.Screen name="CommentsScreen" component={CommentsScreen} />
-//       <Stack.Screen name="MapScreen" component={MapScreen} />
-//     </Stack.Navigator>
-//   );
-// }
-
-const DefaultScreenPosts = ({ route }) => {
+const DefaultScreenPosts = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
-  const navigation = useNavigation();
 
   useEffect(() => {
     if (route.params) setPosts((prevState) => [...prevState, route.params]);
@@ -35,6 +16,11 @@ const DefaultScreenPosts = ({ route }) => {
       headerTintColor: "#212121",
       headerTitleStyle: { fontSize: 17, fontFamily: "Roboto-Medium" },
       headerTitleAlign: "center",
+      headerStyle: {
+        borderBottomWidth: 1,
+        borderColor: "#BDBDBD",
+      },
+      headerLeft: () => null,
       headerRight: () => (
         <Ionicons
           onPress={() => {
@@ -51,6 +37,27 @@ const DefaultScreenPosts = ({ route }) => {
 
   return (
     <View style={styles.container}>
+      {/* ---------------------------------------------------- authUser */}
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          alignItems: "center",
+          marginBottom: 32,
+        }}
+      >
+        <Image
+          style={{ width: 60, height: 60, borderRadius: 16, marginRight: 8 }}
+          source={require("../../assets/images/avatar.jpg")}
+        />
+        <View>
+          <Text style={{ fontSize: 13, fontWeight: "bold" }}>
+            Natali Romanova
+          </Text>
+          <Text style={{ fontSize: 11 }}>email@example.com</Text>
+        </View>
+      </View>
+      {/* ---------------------------------------------------------------- */}
       <FlatList
         data={posts}
         keyExtractor={(item, index) => index.toString()}
@@ -98,7 +105,7 @@ const DefaultScreenPosts = ({ route }) => {
       />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -107,6 +114,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 16,
+    paddingTop: 32,
   },
   image: {
     width: 343,
