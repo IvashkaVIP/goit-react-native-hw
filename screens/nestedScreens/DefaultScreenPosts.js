@@ -10,7 +10,9 @@ const DefaultScreenPosts = ({ route, navigation }) => {
     if (route.params) setPosts((prevState) => [...prevState, route.params]);
   }, [route.params]);
 
-  useEffect(() => {
+  console.log(" DefaultScreen posts[] >>>>>>>>>>>>>>>>>   ", posts);
+    
+    useEffect(() => {
     navigation.setOptions({
       headerTitle: "Публікації",
       headerTintColor: "#212121",
@@ -57,7 +59,7 @@ const DefaultScreenPosts = ({ route, navigation }) => {
           <Text style={{ fontSize: 11 }}>email@example.com</Text>
         </View>
       </View>
-      {/* ---------------------------------------------------------------- */}
+      {/* ----------------------------------------------------------PostsList */}
       <FlatList
         data={posts}
         keyExtractor={(item, index) => index.toString()}
@@ -77,7 +79,7 @@ const DefaultScreenPosts = ({ route, navigation }) => {
                   style={{
                     marginRight: 10,
                   }}
-                  onPress={() => navigation.navigate("Comments")}
+                  onPress={() => navigation.navigate("Comments", posts)}
                 />
                 <Text style={styles.textPhoto}>0</Text>
               </View>
@@ -94,7 +96,7 @@ const DefaultScreenPosts = ({ route, navigation }) => {
                     ...styles.textPhoto,
                     textDecorationLine: "underline",
                   }}
-                  onPress={() => navigation.navigate("Map")}
+                  onPress={() => navigation.navigate("Map",posts)}
                 >
                   {item.description}
                 </Text>
