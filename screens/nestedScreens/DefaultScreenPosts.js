@@ -49,11 +49,6 @@ const DefaultScreenPosts = ({ route }) => {
     });
   }, []);
 
-  console.log(
-    "77777777777777777777777777777777                      ",
-    posts[0]
-  );
-
   return (
     <View style={styles.container}>
       <FlatList
@@ -92,6 +87,7 @@ const DefaultScreenPosts = ({ route }) => {
                     ...styles.textPhoto,
                     textDecorationLine: "underline",
                   }}
+                  onPress={() => navigation.navigate("Map")}
                 >
                   {item.description}
                 </Text>
@@ -109,7 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "aqua",
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 16,
   },
   image: {

@@ -85,10 +85,6 @@ export const CreatePostsScreen = () => {
     });
   }, []);
 
-  // const handleSubmitNamePhoto = (event) => {
-  //   console.log(event.nativeEvent.text);
-  // };
-
   return (
     <View style={styles.container}>
       {/* --------------------------------------  блок камера  */}

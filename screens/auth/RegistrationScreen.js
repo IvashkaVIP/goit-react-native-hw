@@ -40,12 +40,10 @@ export default function RegistrationScreen({ navigation }) {
   };
 
   const handleLoginBtnPress = () => {
-    console.log("LoginBtnPress >>>>>> ");
     navigation.navigate("Login");
   };
 
   const handleRegisterBtnPress = () => {
-    console.log(state);
     setState(initialState);
     navigation.navigate("Home");
   };
