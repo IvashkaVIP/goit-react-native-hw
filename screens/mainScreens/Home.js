@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
 import CreatePostsScreen from "./CreatePostsScreen";
 import PostsScreen from "./PostsScreen";
@@ -11,35 +12,31 @@ import { AntDesign, Feather } from "@expo/vector-icons";
 
 const HomeTabs = createBottomTabNavigator();
 
+function tabBarIsVisible(route) {
+  const routeName = getFocusedRouteNameFromRoute(route) ?? "Default";
+  if (routeName === "Map" || routeName === "Comments")
+    return { display: "none" };
+  return  styles.tabDecoration;
+}
+
 export default function Home() {
   const navigation = useNavigation();
   const route = useRoute();
-  
+
   return (
     <HomeTabs.Navigator
       screenOptions={() => ({
         tabBarShowLabel: false,
         tabBarInactiveTintColor: "rgba(33, 33, 33, 0.8)",
         tabBarActiveTintColor: "rgba(255, 00, 00, 0.8)",
-
-        tabBarStyle: {
-          paddingBottom: 34,
-          paddingHorizontal: 60,
-          height: 83,
-          borderTopColor: "#BDBDBD",
-          borderTopWidth: 1,
-        },
+        tabBarStyle: styles.tabDecoration,
       })}
     >
       <HomeTabs.Screen
         options={({ route }) => ({
+          tabBarStyle : tabBarIsVisible(route),
           tabBarIcon: ({ focused, size, color }) => (
-            <AntDesign
-              // style={styles.footerIconApp}
-              name="appstore-o"
-              size={24}
-              color="#212121"
-            />
+            <AntDesign name="appstore-o" size={24} color="#212121" />
           ),
         })}
         name="Posts"
@@ -86,5 +83,12 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     justifyContent: "center",
     alignItems: "center",
+  },
+  tabDecoration: {
+    paddingBottom: 34,
+    paddingHorizontal: 60,
+    height: 83,
+    borderTopColor: "#BDBDBD",
+    borderTopWidth: 1,
   },
 });

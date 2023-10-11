@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   TouchableOpacity,
@@ -8,9 +8,58 @@ import {
   TextInput,
 } from "react-native";
 import { FontAwesome, Feather } from "@expo/vector-icons";
+import { Camera } from "expo-camera";
+import * as Location from "expo-location";
+
+const initialStatePhoto = {
+  url: "",
+  name: "",
+  description: "",
+  location: {
+    latitude: null,
+    longitude: null,
+  },
+};
 
 export const CreatePostsScreen = () => {
+  const cameraRef = useRef(null);
   const navigation = useNavigation();
+  const [statePhoto, setStatePhoto] = useState(initialStatePhoto);
+
+  // -----------------------------   checking Location Permission
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+      //  let location = await Location.getCurrentPositionAsync({});
+      //  setLocation(location);
+    })();
+  }, []);
+
+  const takePhoto = async () => {
+    const newUrl = (await cameraRef.current.takePictureAsync()).uri;
+    const newLocation = await Location.getCurrentPositionAsync();
+
+    setStatePhoto((prevState) => ({
+      ...prevState,
+      url: newUrl,
+      location: {
+        latitude: newLocation.coords.latitude,
+        longitude: newLocation.coords.longitude,
+      },
+    }));
+  };
+
+  const publishPhoto = () => {
+    if (statePhoto.url) navigation.navigate("Default", statePhoto);
+  };
+
+  const deletePhoto = () => {
+    setStatePhoto(initialStatePhoto);
+  };
 
   useEffect(() => {
     navigation.setOptions({
@@ -27,7 +76,7 @@ export const CreatePostsScreen = () => {
       headerLeft: (focused, size, color) => (
         <Feather
           style={{ marginLeft: 16 }}
-          onPress={() => navigation.navigate("Posts")}
+          onPress={() => navigation.navigate("Default")}
           name="arrow-left"
           size={24}
           color="rgba(33, 33, 33, 0.8)"
@@ -38,24 +87,38 @@ export const CreatePostsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.contentBlock}>
-        <View style={styles.cameraWrap}>
+      {/* --------------------------------------  блок камера  */}
+      <Camera style={styles.camera} ref={cameraRef}>
+        <TouchableOpacity onPress={takePhoto} style={styles.cameraBtn}>
           <FontAwesome name="camera" size={24} color="#BDBDBD" />
-        </View>
-      </View>
+        </TouchableOpacity>
+      </Camera>
+      {/* ------------------------------------------------------- */}
+
       <View style={styles.textWrap}>
         <Text style={styles.textFoto}>Завантажте фото</Text>
         <TextInput
           style={styles.textTitle}
           placeholder="Назва..."
           placeholderTextColor="#BDBDBD"
+          onSubmitEditing={(event) =>
+            setStatePhoto((prevState) => ({
+              ...prevState,
+              name: event.nativeEvent.text,
+            }))
+          }
         />
 
         <View style={styles.textArea}>
           <TextInput
-            style={{ fontSize: 16, paddingLeft: 25, paddingTop: 16 }}
+            style={{ ...styles.textTitle, paddingLeft: 25 }}
             placeholder="Місцевість..."
             placeholderTextColor="#BDBDBD"
+            onSubmitEditing={(event) =>
+              setStatePhoto((prevState) => ({
+                ...prevState, description: event.nativeEvent.text
+              }))
+            }
           />
           <Feather
             name="map-pin"
@@ -66,23 +129,39 @@ export const CreatePostsScreen = () => {
         </View>
 
         <TouchableOpacity
-          // onPress={}
+          onPress={publishPhoto}
           activeOpacity={0.8}
-          style={styles.publishBtn}
+          style={
+            statePhoto.url
+              ? { ...styles.publishBtn, backgroundColor: "#FF6C00" }
+              : styles.publishBtn
+          }
         >
-          <Text style={styles.textPublishBtn}>Опубліковати</Text>
+          <Text
+            style={
+              statePhoto.url
+                ? { ...styles.textPublishBtn, color: "white" }
+                : styles.textPublishBtn
+            }
+          >
+            Опубліковати
+          </Text>
         </TouchableOpacity>
-
 
         <TouchableOpacity
-          // onPress={deletePhoto}
-          style={styles.deleteBtn}
+          onPress={deletePhoto}
+          style={
+            statePhoto.url
+              ? { ...styles.deleteBtn, backgroundColor: "#FF6C00" }
+              : styles.deleteBtn
+          }
         >
-          <Feather name="trash-2" size={24} color="#BDBDBD" />
+          <Feather
+            name="trash-2"
+            size={24}
+            color={statePhoto.url ? "white" : "#BDBDBD"}
+          />
         </TouchableOpacity>
-
-        
-
       </View>
     </View>
   );
@@ -96,7 +175,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 32,
   },
-  contentBlock: {
+  camera: {
     height: 267,
     width: "100%",
     backgroundColor: "#F6F6F6",
@@ -107,11 +186,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 8,
   },
-  cameraWrap: {
+  cameraBtn: {
     borderRadius: 50,
     width: 60,
     height: 60,
     backgroundColor: "white",
+    opacity: 0.3,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -123,15 +203,15 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   textFoto: {
+    color: "#BDBDBD",
     fontFamily: "Roboto-Regular",
     fontStyle: "normal",
     fontSize: 16,
     lineHeight: 19,
-    color: "#BDBDBD",
     marginBottom: 32,
   },
   textTitle: {
-    color: "#BDBDBD",
+    color: "#212121",
     marginBottom: 16,
     height: 50,
     borderBottomWidth: 1,
@@ -141,13 +221,8 @@ const styles = StyleSheet.create({
   },
   textArea: {
     position: "relative",
-    color: "#BDBDBD",
     height: 50,
     marginBottom: 32,
-    borderBottomWidth: 1,
-    borderStyle: "solid",
-    borderBottomColor: "#E8E8E8",
-    fontSize: 16,
   },
   publishBtn: {
     marginBottom: 80,
@@ -160,7 +235,7 @@ const styles = StyleSheet.create({
   textPublishBtn: {
     fontFamily: "Roboto-Regular",
     fontStyle: "normal",
-    fontSize: 16,
+    fontSize: 20,
     lineHeight: 19,
     color: "#BDBDBD",
   },

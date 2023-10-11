@@ -1,41 +1,25 @@
-import React, { useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { View, Text, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import React, { useState } from "react";
 
-export default function PostsScreen () {
-  const navigation = useNavigation();
+import DefaultScreenPosts from "../nestedScreens/DefaultScreenPosts";
+import CommentsScreen from "../nestedScreens/CommentsScreen";
+import MapScreen from "../nestedScreens/MapScreen";
 
-  useEffect(()=>{navigation.setOptions({
-    headerTitle: "Публікації",
-    headerTintColor: "#212121",
-    headerTitleStyle: { fontSize: 17, fontFamily: "Roboto-Medium" },
-    headerTitleAlign: "center",
-    headerRight: () => (
-      <Ionicons
-        onPress={() => {
-          navigation.navigate("Login");
-        }}
-        style={{ marginRight: 10 }}
-        name="exit-outline"
-        size={24}
-        color="#BDBDBD"
-      />
-    ),
-  });},[])
-     
+import { createStackNavigator } from "@react-navigation/stack";
+
+const nestedScreens = createStackNavigator();
+
+const PostsScreen = ({ navigation }) => {
+  useState((()=>{navigation.setOptions({
+    headerShown: false,
+  });}),[])  
+
   return (
-    <View style={styles.container}>
-      <Text>PostsScreen</Text>
-    </View>
+    <nestedScreens.Navigator>
+      <nestedScreens.Screen name="Default" component={DefaultScreenPosts} />
+      <nestedScreens.Screen name="Comments" component={CommentsScreen} />
+      <nestedScreens.Screen name="Map" component={MapScreen}  />  
+    </nestedScreens.Navigator>
   );
-    
-};
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
+}
 
+export default PostsScreen;
