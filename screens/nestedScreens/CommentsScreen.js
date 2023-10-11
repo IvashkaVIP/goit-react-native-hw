@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { Ionicons, Feather } from "@expo/vector-icons";
-
 const CommentsScreen = ({ route, navigation }) => {
   useEffect(() => {
     navigation.setOptions({
@@ -19,13 +18,57 @@ const CommentsScreen = ({ route, navigation }) => {
       headerTitleAlign: "center",
     });
   }, []);
+  const [posts, setPosts] = useState([]);
+  const [currentComment, setCurrentComment] = useState("");
 
-    return (
-      <View style={styles.container}>
-        <Text>CommentsScreen</Text>
-      </View>
-    );
-}
+  useEffect(() => {
+    if (route.params) setPosts((prevState) => [...prevState, ...route.params]);
+  }, [route.params]);
+
+  console.log(" CommentsScreen posts[] >>>>>>>>>>>>>>>>>   ", posts);
+
+  return (
+    <View style={styles.container}>
+      {/* ----------------------------------------------------------PostsList */}
+      <FlatList
+        data={posts}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <View style={{ marginBottom: 32 }}>
+            <Image source={{ uri: item.url }} style={styles.image} />
+          </View>
+        )}
+      />
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={100}
+        style={{ position: "absolute", left: 16, right: 16, bottom: 16 }}
+      >
+        <View style={{ marginBottom: 16 }}>
+          <TextInput
+            style={styles.commentInput}
+            placeholder="Коментувати..."
+            placeholderTextColor="#BDBDBD"
+            value={currentComment}
+            onChangeText={setCurrentComment}
+          />
+          <TouchableOpacity style={styles.commentBtn}>
+            <Feather
+              name="arrow-up"
+              size={24}
+              color="#FFFFFF"
+              onPress={() => {
+                Keyboard.dismiss();
+                setCurrentComment("");
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </View>
+  );
+};
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -78,5 +121,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-
 export default CommentsScreen;
