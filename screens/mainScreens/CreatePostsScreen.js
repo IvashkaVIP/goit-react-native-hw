@@ -12,7 +12,6 @@ import { Camera } from "expo-camera";
 import * as Location from "expo-location";
 
 const initialStatePhoto = {
-  photo: null,
   url: "",
   name: "",
   description: "",
@@ -25,11 +24,6 @@ const initialStatePhoto = {
 export const CreatePostsScreen = () => {
   const cameraRef = useRef(null);
   const navigation = useNavigation();
-  // const [photo, setPhoto] = useState(null);
-  // const [urlPhoto, setUrlPhoto] = useState("");
-  // const [namePhoto, setNamePhoto] = useState("");
-  // const [mapPhoto, setMapPhoto] = useState("");
-
   const [statePhoto, setStatePhoto] = useState(initialStatePhoto);
 
   // -----------------------------   checking Location Permission
@@ -57,17 +51,10 @@ export const CreatePostsScreen = () => {
         longitude: newLocation.coords.longitude,
       },
     }));
-
-    // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>            ", statePhoto);
-    // console.log("takePhoto ->>>>>>> ", newUrl);
-    // console.log("latitude ->>>>>>> ", location.coords.latitude);
-    // console.log("longitude ->>>>>>> ", location.coords.longitude);
   };
 
   const publishPhoto = () => {
-    // if (!namePhoto) setNamePhoto("noName");
-    // if (!mapPhoto) setMapPhoto("noMap");
-    if (statePhoto.url) navigation.navigate("Posts", statePhoto);
+    if (statePhoto.url) navigation.navigate("Default", statePhoto);
   };
 
   const deletePhoto = () => {
@@ -89,7 +76,7 @@ export const CreatePostsScreen = () => {
       headerLeft: (focused, size, color) => (
         <Feather
           style={{ marginLeft: 16 }}
-          onPress={() => navigation.navigate("Posts")}
+          onPress={() => navigation.navigate("Default")}
           name="arrow-left"
           size={24}
           color="rgba(33, 33, 33, 0.8)"
