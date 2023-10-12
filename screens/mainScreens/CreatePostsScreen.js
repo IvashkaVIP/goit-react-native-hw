@@ -6,10 +6,14 @@ import {
   Text,
   View,
   TextInput,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { FontAwesome, Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
+import ImagePicker from "react-native-image-picker";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 
 const initialStatePhoto = {
   url: "",
@@ -22,9 +26,22 @@ const initialStatePhoto = {
 };
 
 export const CreatePostsScreen = () => {
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const cameraRef = useRef(null);
   const navigation = useNavigation();
   const [statePhoto, setStatePhoto] = useState(initialStatePhoto);
+
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
+
+  const loadingImage = () => {
+    console.log(ImagePicker);
+    console.log(launchImageLibrary({mediaType: "photo"}));
+    // const result = await ImagePicker.launchImageLibrary({mediaType: "mixed"})
+    // console.log("loadingImage >>>>>>>>>>>>>  ", result);
+  };
 
   // -----------------------------   checking Location Permission
   useEffect(() => {
@@ -86,84 +103,92 @@ export const CreatePostsScreen = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      {/* --------------------------------------  блок камера  */}
-      <Camera style={styles.camera} ref={cameraRef}>
-        <TouchableOpacity onPress={takePhoto} style={styles.cameraBtn}>
-          <FontAwesome name="camera" size={24} color="#BDBDBD" />
-        </TouchableOpacity>
-      </Camera>
-      {/* ------------------------------------------------------- */}
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <View style={styles.container}>
+        {/* --------------------------------------  блок камера  */}
+        <Camera style={styles.camera} ref={cameraRef}>
+          <TouchableOpacity onPress={takePhoto} style={styles.cameraBtn}>
+            <FontAwesome name="camera" size={24} color="#BDBDBD" />
+          </TouchableOpacity>
+        </Camera>
+        {/* ------------------------------------------------------- */}
 
-      <View style={styles.textWrap}>
-        <Text style={styles.textFoto}>Завантажте фото</Text>
-        <TextInput
-          style={styles.textTitle}
-          placeholder="Назва..."
-          placeholderTextColor="#BDBDBD"
-          onSubmitEditing={(event) =>
-            setStatePhoto((prevState) => ({
-              ...prevState,
-              name: event.nativeEvent.text,
-            }))
-          }
-        />
-
-        <View style={styles.textArea}>
+        <View style={styles.textWrap}>
+          <Text
+            style={styles.textFoto}
+            onPress={loadingImage}
+          >
+            Завантажте фото
+          </Text>
           <TextInput
-            style={{ ...styles.textTitle, paddingLeft: 25 }}
-            placeholder="Місцевість..."
+            style={styles.textTitle}
+            placeholder="Назва..."
             placeholderTextColor="#BDBDBD"
             onSubmitEditing={(event) =>
               setStatePhoto((prevState) => ({
-                ...prevState, description: event.nativeEvent.text
+                ...prevState,
+                name: event.nativeEvent.text,
               }))
             }
           />
-          <Feather
-            name="map-pin"
-            size={20}
-            color="#BDBDBD"
-            style={{ position: "absolute", bottom: 10 }}
-          />
-        </View>
 
-        <TouchableOpacity
-          onPress={publishPhoto}
-          activeOpacity={0.8}
-          style={
-            statePhoto.url
-              ? { ...styles.publishBtn, backgroundColor: "#FF6C00" }
-              : styles.publishBtn
-          }
-        >
-          <Text
+          <View style={styles.textArea}>
+            <TextInput
+              style={{ ...styles.textTitle, paddingLeft: 25 }}
+              placeholder="Місцевість..."
+              placeholderTextColor="#BDBDBD"
+              onSubmitEditing={(event) =>
+                setStatePhoto((prevState) => ({
+                  ...prevState,
+                  description: event.nativeEvent.text,
+                }))
+              }
+            />
+            <Feather
+              name="map-pin"
+              size={20}
+              color="#BDBDBD"
+              style={{ position: "absolute", bottom: 10 }}
+            />
+          </View>
+
+          <TouchableOpacity
+            onPress={publishPhoto}
+            activeOpacity={0.8}
             style={
               statePhoto.url
-                ? { ...styles.textPublishBtn, color: "white" }
-                : styles.textPublishBtn
+                ? { ...styles.publishBtn, backgroundColor: "#FF6C00" }
+                : styles.publishBtn
             }
           >
-            Опубліковати
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={
+                statePhoto.url
+                  ? { ...styles.textPublishBtn, color: "white" }
+                  : styles.textPublishBtn
+              }
+            >
+              Опубліковати
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={deletePhoto}
-          style={
-            statePhoto.url
-              ? { ...styles.deleteBtn, backgroundColor: "#FF6C00" }
-              : styles.deleteBtn
-          }
-        >
-          <Feather
-            name="trash-2"
-            size={24}
-            color={statePhoto.url ? "white" : "#BDBDBD"}
-          />
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={deletePhoto}
+            style={
+              statePhoto.url
+                ? { ...styles.deleteBtn, backgroundColor: "#FF6C00" }
+                : styles.deleteBtn
+            }
+          >
+            <Feather
+              name="trash-2"
+              size={24}
+              color={statePhoto.url ? "white" : "#BDBDBD"}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 const styles = StyleSheet.create({

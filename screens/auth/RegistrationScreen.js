@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { useState } from "react";
 import {
@@ -23,12 +22,12 @@ const initialState = {
 export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
-  // const navigation = useNavigation();
 
-  const keybordHide = () => {
-    setIsShowKeyboard(false);
-    Keyboard.dismiss();
-  };
+const keyboardHide = () => {
+  setIsShowKeyboard(false);
+  Keyboard.dismiss();
+};
+
 
   const handleFocus = () => {
     setIsShowKeyboard(true);
@@ -36,7 +35,6 @@ export default function RegistrationScreen({ navigation }) {
 
   const handleSubmit = () => {
     setIsShowKeyboard(false);
-    
   };
 
   const handleLoginBtnPress = () => {
@@ -49,7 +47,7 @@ export default function RegistrationScreen({ navigation }) {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={keybordHide}>
+    <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
         <ImageBackground
           source={require("../../assets/images/PhotoBG.jpg")}
@@ -144,8 +142,7 @@ export default function RegistrationScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         </ImageBackground>
-        {/* // <StatusBar style="auto" /> */}
-      </View>
+       </View>
     </TouchableWithoutFeedback>
   );
 }

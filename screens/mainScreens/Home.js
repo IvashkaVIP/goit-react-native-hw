@@ -34,7 +34,8 @@ export default function Home() {
     >
       <HomeTabs.Screen
         options={({ route }) => ({
-          tabBarStyle : tabBarIsVisible(route),
+          headerShown: false,
+          tabBarStyle: tabBarIsVisible(route),
           tabBarIcon: ({ focused, size, color }) => (
             <AntDesign name="appstore-o" size={24} color="#212121" />
           ),
@@ -63,6 +64,7 @@ export default function Home() {
 
       <HomeTabs.Screen
         options={({ route }) => ({
+          headerShown: false,
           tabBarIcon: ({ focused, size, color }) => {
             return <Feather name="user" size={24} color="#212121" />;
           },

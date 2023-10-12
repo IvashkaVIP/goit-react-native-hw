@@ -90,13 +90,14 @@ const DefaultScreenPosts = ({ route, navigation }) => {
                   size={24}
                   color="#BDBDBD"
                   style={{ marginRight: 10 }}
+                  onPress={() => navigation.navigate("Map", posts)}
                 />
                 <Text
                   style={{
                     ...styles.textPhoto,
                     textDecorationLine: "underline",
                   }}
-                  onPress={() => navigation.navigate("Map",posts)}
+                  onPress={() => navigation.navigate("Map", posts)}
                 >
                   {item.description}
                 </Text>

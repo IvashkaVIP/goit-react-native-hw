@@ -8,65 +8,76 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
-import { Ionicons, Feather } from "@expo/vector-icons";
-const CommentsScreen = ({ route, navigation }) => {
+import { Feather } from "@expo/vector-icons";
+
+export default CommentsScreen = ({ route, navigation }) => {
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [currentComment, setCurrentComment] = useState("");
+  
   useEffect(() => {
     navigation.setOptions({
       title: "Коментарі",
       headerTitleAlign: "center",
     });
   }, []);
-  const [posts, setPosts] = useState([]);
-  const [currentComment, setCurrentComment] = useState("");
-
+  
   useEffect(() => {
     if (route.params) setPosts((prevState) => [...prevState, ...route.params]);
   }, [route.params]);
 
+   const keyboardHide = () => {
+     setIsShowKeyboard(false);
+     Keyboard.dismiss();
+   };
+
   console.log(" CommentsScreen posts[] >>>>>>>>>>>>>>>>>   ", posts);
 
   return (
-    <View style={styles.container}>
-      {/* ----------------------------------------------------------PostsList */}
-      <FlatList
-        data={posts}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 32 }}>
-            <Image source={{ uri: item.url }} style={styles.image} />
-          </View>
-        )}
-      />
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <View style={styles.container}>
+        {/* ----------------------------------------------------------PostsList */}
+        <FlatList
+          data={posts}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={{ marginBottom: 32 }}>
+              <Image source={{ uri: item.url }} style={styles.image} />
+            </View>
+          )}
+        />
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={100}
-        style={{ position: "absolute", left: 16, right: 16, bottom: 16 }}
-      >
-        <View style={{ marginBottom: 16 }}>
-          <TextInput
-            style={styles.commentInput}
-            placeholder="Коментувати..."
-            placeholderTextColor="#BDBDBD"
-            value={currentComment}
-            onChangeText={setCurrentComment}
-          />
-          <TouchableOpacity style={styles.commentBtn}>
-            <Feather
-              name="arrow-up"
-              size={24}
-              color="#FFFFFF"
-              onPress={() => {
-                Keyboard.dismiss();
-                setCurrentComment("");
-              }}
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={100}
+          style={{ position: "absolute", left: 16, right: 16, bottom: 16 }}
+        >
+          <View style={{ marginBottom: 16 }}>
+            <TextInput
+              style={styles.commentInput}
+              placeholder="Коментувати..."
+              placeholderTextColor="#BDBDBD"
+              value={currentComment}
+              onChangeText={setCurrentComment}
             />
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
-    </View>
+            <TouchableOpacity style={styles.commentBtn}>
+              <Feather
+                name="arrow-up"
+                size={24}
+                color="#FFFFFF"
+                onPress={() => {
+                  Keyboard.dismiss();
+                  setCurrentComment("");
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 const styles = StyleSheet.create({
@@ -121,4 +132,3 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-export default CommentsScreen;

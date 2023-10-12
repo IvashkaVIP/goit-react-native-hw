@@ -1,60 +1,64 @@
-import React, { useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { Ionicons, AntDesign, Feather } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
 import {
   KeyboardAvoidingView,
   ImageBackground,
   StyleSheet,
   Text,
   View,
-  } from "react-native";
-
-const ProfileScreen = () => {
-  const navigation = useNavigation();
-
+} from "react-native";
+ 
+export default ProfileScreen = ({ navigation }) => {
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, []);
 
-  return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require("../../assets/images/PhotoBG.jpg")}
-        style={styles.imageBcg}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.keybView}
-        >
-          <View style={styles.content}>
-            <View style={styles.title}>
-              <View style={styles.avatar}>
-                <AntDesign
-                  style={styles.add}
-                  name="pluscircleo"
-                  size={24}
-                  color="black"
-                />
-              </View>
+ const keyboardHide = () => {
+   setIsShowKeyboard(false);
+   Keyboard.dismiss();
+ };
 
-              <Ionicons
-                onPress={() => {
-                  navigation.navigate("Login");
-                }}
-                style={styles.logoutIcon}
-                name="exit-outline"
-                size={24}
-                color="#BDBDBD"
-              />
-              <Text style={styles.mainText}>Ім'я користувача</Text>
+  return (
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <View style={styles.container}>
+        <ImageBackground
+          source={require("../../assets/images/PhotoBG.jpg")}
+          style={styles.imageBcg}
+        >
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.keybView}
+          >
+            <View style={styles.content}>
+              <View style={styles.title}>
+                <View style={styles.avatar}>
+                  <AntDesign
+                    style={styles.add}
+                    name="pluscircleo"
+                    size={24}
+                    color="black"
+                  />
+                </View>
+
+                <Ionicons
+                  onPress={() => {
+                    navigation.navigate("Login");
+                  }}
+                  style={styles.logoutIcon}
+                  name="exit-outline"
+                  size={24}
+                  color="#BDBDBD"
+                />
+                <Text style={styles.mainText}>Ім'я користувача</Text>
+              </View>
             </View>
-          </View>
-        </KeyboardAvoidingView>
-      </ImageBackground>
-    </View>
-    // </TouchableWithoutFeedback>
+          </KeyboardAvoidingView>
+        </ImageBackground>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -123,4 +127,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfileScreen;

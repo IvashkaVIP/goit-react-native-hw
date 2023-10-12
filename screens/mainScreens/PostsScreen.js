@@ -9,9 +9,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 const nestedScreens = createStackNavigator();
 
 const PostsScreen = ({ navigation }) => {
-  useState((()=>{navigation.setOptions({
-    headerShown: false,
-  });}),[])  
 
   return (
     <nestedScreens.Navigator>
