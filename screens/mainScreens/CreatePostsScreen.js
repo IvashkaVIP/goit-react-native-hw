@@ -12,8 +12,8 @@ import {
 import { FontAwesome, Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
-import ImagePicker from "react-native-image-picker";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import * as ImagePicker from "expo-image-picker";
+// import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 
 const initialStatePhoto = {
   url: "",
@@ -36,10 +36,14 @@ export const CreatePostsScreen = () => {
     Keyboard.dismiss();
   };
 
-  const loadingImage = () => {
-    console.log(ImagePicker);
-    console.log(launchImageLibrary({mediaType: "photo"}));
-    // const result = await ImagePicker.launchImageLibrary({mediaType: "mixed"})
+  const loadingImage = async () => {
+    // console.log(ImagePicker);
+    // const a = ImagePicker();
+    // await launchImageLibrary({ mediaType: "photo" }, ((res) => { console.log("adasddddd -> ", res) }));
+      
+     const result = await ImagePicker.launchImageLibraryAsync({
+       mediaType: "photo",
+     });
     // console.log("loadingImage >>>>>>>>>>>>>  ", result);
   };
 
