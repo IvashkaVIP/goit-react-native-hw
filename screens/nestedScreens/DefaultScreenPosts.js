@@ -10,7 +10,7 @@ const DefaultScreenPosts = ({ route, navigation }) => {
     if (route.params) setPosts((prevState) => [...prevState, route.params]);
   }, [route.params]);
 
-  console.log(" DefaultScreen posts[] >>>>>>>>>>>>>>>>>   ", posts);
+  // console.log(" DefaultScreen posts[] >>>>>>>>>>>>>>>>>   ", posts);
     
     useEffect(() => {
     navigation.setOptions({

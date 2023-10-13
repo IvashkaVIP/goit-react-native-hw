@@ -13,7 +13,6 @@ import { FontAwesome, Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
 import * as ImagePicker from "expo-image-picker";
-// import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 
 const initialStatePhoto = {
   url: "",
@@ -24,27 +23,33 @@ const initialStatePhoto = {
     longitude: null,
   },
 };
-
-export const CreatePostsScreen = () => {
+const initialStateInput = {
+  name: "",
+  layout: "",
+};
+export const CreatePostsScreen = ({ navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const cameraRef = useRef(null);
-  const navigation = useNavigation();
   const [statePhoto, setStatePhoto] = useState(initialStatePhoto);
+  const [stateInput, setStateInput] = useState(initialStateInput);
+
+  // console.log(" InputName : >>>>>>>>>>>>>>>  ",stateInput.name);
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
 
-  const loadingImage = async () => {
-    // console.log(ImagePicker);
-    // const a = ImagePicker();
-    // await launchImageLibrary({ mediaType: "photo" }, ((res) => { console.log("adasddddd -> ", res) }));
-      
-     const result = await ImagePicker.launchImageLibraryAsync({
-       mediaType: "photo",
-     });
-    // console.log("loadingImage >>>>>>>>>>>>>  ", result);
+  const loadingImageFromGallery = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaType: "photo",
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    setStatePhoto((prevState) => ({ ...prevState, url: result.assets[0].uri }));
+    console.log("loadingImage >>>>>>>>>>>>>  ", statePhoto.url);
   };
 
   // -----------------------------   checking Location Permission
@@ -75,11 +80,13 @@ export const CreatePostsScreen = () => {
   };
 
   const publishPhoto = () => {
+    setStateInput(initialStateInput);
     if (statePhoto.url) navigation.navigate("Default", statePhoto);
   };
 
   const deletePhoto = () => {
     setStatePhoto(initialStatePhoto);
+    setStateInput(initialStateInput);
   };
 
   useEffect(() => {
@@ -118,22 +125,29 @@ export const CreatePostsScreen = () => {
         {/* ------------------------------------------------------- */}
 
         <View style={styles.textWrap}>
-          <Text
-            style={styles.textFoto}
-            onPress={loadingImage}
-          >
+          <Text style={styles.textFoto} onPress={loadingImageFromGallery}>
             Завантажте фото
           </Text>
           <TextInput
             style={styles.textTitle}
             placeholder="Назва..."
             placeholderTextColor="#BDBDBD"
-            onSubmitEditing={(event) =>
+            // onFocus={setIsShowKeyboard(true)}
+            value={stateInput.name}
+            onChangeText={(value) =>
+              setStateInput((prevState) => ({
+                ...prevState,
+                name: value,
+              }))
+            }
+            // onSubmitEditing={handleSubmit}
+
+            onSubmitEditing={(event) => {
               setStatePhoto((prevState) => ({
                 ...prevState,
                 name: event.nativeEvent.text,
-              }))
-            }
+              }));
+            }}
           />
 
           <View style={styles.textArea}>
@@ -141,6 +155,15 @@ export const CreatePostsScreen = () => {
               style={{ ...styles.textTitle, paddingLeft: 25 }}
               placeholder="Місцевість..."
               placeholderTextColor="#BDBDBD"
+              value={stateInput.layout}
+              onChangeText={(value) =>
+                setStateInput((prevState) => ({
+                  ...prevState,
+                  layout: value,
+                }))
+              }
+              // onSubmitEditing={handleSubmit}
+
               onSubmitEditing={(event) =>
                 setStatePhoto((prevState) => ({
                   ...prevState,
