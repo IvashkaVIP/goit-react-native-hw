@@ -12,6 +12,8 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import {useDispatch} from "react-redux"
+import { authSignUp } from "../../redux/auth/authOperations"
 
 const initialState = {
   login: "",
@@ -23,27 +25,30 @@ export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
 
-const keyboardHide = () => {
+  const dispatch = useDispatch();
+
+  
+    const handleRegisterBtnPress = () => {
+      dispatch(authSignUp(state));
+      setState(initialState);
+      navigation.navigate("Home");
+    };
+  
+  const handleSubmit = () => {
+    setIsShowKeyboard(false);
+  };
+
+  const keyboardHide = () => {
   setIsShowKeyboard(false);
   Keyboard.dismiss();
 };
-
 
   const handleFocus = () => {
     setIsShowKeyboard(true);
   };
 
-  const handleSubmit = () => {
-    setIsShowKeyboard(false);
-  };
-
   const handleLoginBtnPress = () => {
     navigation.navigate("Login");
-  };
-
-  const handleRegisterBtnPress = () => {
-    setState(initialState);
-    navigation.navigate("Home");
   };
 
   return (
