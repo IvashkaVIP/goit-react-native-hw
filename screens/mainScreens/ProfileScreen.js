@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import {
+  TouchableWithoutFeedback,
   KeyboardAvoidingView,
   ImageBackground,
   StyleSheet,
