@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { FlatList } from "react-native-gesture-handler";
+import { authSignOut } from "../../redux/auth/authOperations";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase/config";
+import { store } from "../../redux/store";
 
 const DefaultScreenPosts = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
@@ -26,7 +30,10 @@ const DefaultScreenPosts = ({ route, navigation }) => {
       headerRight: () => (
         <Ionicons
           onPress={() => {
-            navigation.navigate("Login");
+            console.log(store.getState());
+            signOut(auth);
+            console.log(store.getState());
+            // navigation.navigate("Login");
           }}
           style={{ marginRight: 10 }}
           name="exit-outline"

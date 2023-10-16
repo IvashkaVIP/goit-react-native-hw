@@ -3,6 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 
 const MainStack = createStackNavigator();
+const HomeStack = createStackNavigator();
 
 import LoginScreen from "./screens/auth/LoginScreen";
 import RegistrationScreen from "./screens/auth/RegistrationScreen";
@@ -26,19 +27,19 @@ export const useRoute = (isAuth) => {
             headerShown: false,
           }}
         />
-        <MainStack.Screen
+        {/* <MainStack.Screen
           name="Home"
           component={Home}
           options={{
               headerShown: false,
         }}
-        />
+        /> */}
       </MainStack.Navigator>
     );
   }
-//   return (
-//     <HomeStack.Navigator>
-//       <HomeStack.Screen name="Home" component={Home} />
-//     </HomeStack.Navigator>
-//   );
+   return (
+     <HomeStack.Navigator>
+      <HomeStack.Screen options={{ headerShown: false }} name="Home" component={Home} />
+    </HomeStack.Navigator>
+   );
 };

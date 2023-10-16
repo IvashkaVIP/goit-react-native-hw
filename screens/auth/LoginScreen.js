@@ -29,7 +29,7 @@ const handleLoginBtnPress = () => {
   console.log("LoginBtnPress >>>>>> ");
   dispatch(authSignIn(state));
   setState(initialState);
-  navigation.navigate("Home");
+  // navigation.navigate("Home");
 };
 
   const keyboardHide = () => {

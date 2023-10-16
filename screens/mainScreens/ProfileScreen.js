@@ -5,9 +5,12 @@ import {
   KeyboardAvoidingView,
   ImageBackground,
   StyleSheet,
+  Keyboard,
   Text,
   View,
 } from "react-native";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase/config";
  
 export default ProfileScreen = ({ navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
@@ -46,7 +49,8 @@ export default ProfileScreen = ({ navigation }) => {
 
                 <Ionicons
                   onPress={() => {
-                    navigation.navigate("Login");
+                    signOut(auth);
+                    // navigation.navigate("Login");
                   }}
                   style={styles.logoutIcon}
                   name="exit-outline"

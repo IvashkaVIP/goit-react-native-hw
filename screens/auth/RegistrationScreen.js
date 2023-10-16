@@ -31,7 +31,7 @@ export default function RegistrationScreen({ navigation }) {
     const handleRegisterBtnPress = () => {
       dispatch(authSignUp(state));
       setState(initialState);
-      navigation.navigate("Home");
+      // navigation.navigate("Home");
     };
   
   const handleSubmit = () => {
