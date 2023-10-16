@@ -6,6 +6,8 @@ import {
   signOut,
 } from "firebase/auth";
 
+import {store} from "../store"
+
 import { auth } from "../../firebase/config";
 import { authSlice } from "./authSlice";
 
@@ -13,23 +15,22 @@ export const authSignUp =
   ({ nickname, email, password }) =>
   async (dispatch, getState) => {
     try {
-      console.log("authSignUp >>>>>>>>>  ", { email, password });
-      const user = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("authSignUp >>>>>>>>>  ", { email, password, nickname });
+      await createUserWithEmailAndPassword(auth, email, password);
 
-      
-      await updateProfile(auth.currentUser, { displayName: nickname });
+     const user = auth.currentUser;
+      await updateProfile(user, { displayName: nickname });
       const { uid, displayName } = user;
-
       dispatch(
         authSlice.actions.updateUserProfile({
           userId: uid,
           nickname: displayName,
         })
       );
-
-      // console.log("AUTH: >>>>>> ", auth);
-
-      // console.log("signUp User: ", user);
+     
+      // console.log(auth.currentUser);
+      // console.log(store.getState());
+      
     } catch (err) {
       console.log("err", err);
       console.log("err.message", err.message);
@@ -50,19 +51,19 @@ export const authSignIn =
 
 export const authStateChanged = () => async (dispatch, getState) => {
   onAuthStateChanged(auth, (user) => {
-    console.log("User ", user);
-    // if (user) {
-    //   const { uid, displayName, photoURL, email } = auth.currentUser;
-    // dispatch(
-    //   updateUserProfile({
-    //     userId: uid,
-    //     login: displayName,
-    //     avatar: photoURL,
-    //     email,
-    //   })
-    // );
-    // dispatch(authStateChange({ stateChange: true }));
-    // }
+    // console.log("User ", user);
+    if (user) {
+      const { uid, displayName, email } = auth.currentUser;
+    dispatch(
+       authSlice.actions.updateUserProfile({
+        userId: uid,
+        nickname: displayName,
+        email,
+      })
+    );
+      dispatch(authSlice.actions.authStateChange({ stateChange: true }));
+      console.log(store.getState())
+    }
   });
 };
 
