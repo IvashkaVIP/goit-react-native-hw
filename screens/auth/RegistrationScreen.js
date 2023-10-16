@@ -16,7 +16,7 @@ import {useDispatch} from "react-redux"
 import { authSignUp } from "../../redux/auth/authOperations"
 
 const initialState = {
-  login: "",
+  nickname: "",
   email: "",
   password: "",
 };
@@ -81,9 +81,9 @@ export default function RegistrationScreen({ navigation }) {
                   placeholder="Логін"
                   placeholderTextColor="#BDBDBD"
                   onFocus={handleFocus}
-                  value={state.login}
+                  value={state.nickname}
                   onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, login: value }))
+                    setState((prevState) => ({ ...prevState, nickname: value }))
                   }
                   onSubmitEditing={handleSubmit}
                 />

@@ -36,7 +36,6 @@ const handleLoginBtnPress = () => {
   setIsShowKeyboard(false);
   Keyboard.dismiss();
 };
-
   
   const handleFocus = () => {
     setIsShowKeyboard(true);    
@@ -44,8 +43,7 @@ const handleLoginBtnPress = () => {
 
   const handleSubmit = () => {
     setIsShowKeyboard(false);    
-    
-  }
+    }
   
   const handleRegisterBtnPress = () => {
     console.log("RegistrationBtnPress >>>>>> ");
