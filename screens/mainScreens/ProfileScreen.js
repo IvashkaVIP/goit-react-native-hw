@@ -9,11 +9,17 @@ import {
   Text,
   View,
 } from "react-native";
-import { signOut } from "firebase/auth";
 import { auth } from "../../firebase/config";
+import { useDispatch } from "react-redux";
+import { authSignOutUser } from "../../redux/auth/authOperations";
  
 export default ProfileScreen = ({ navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const dispatch = useDispatch();
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
+
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -48,10 +54,7 @@ export default ProfileScreen = ({ navigation }) => {
                 </View>
 
                 <Ionicons
-                  onPress={() => {
-                    signOut(auth);
-                    // navigation.navigate("Login");
-                  }}
+                  onPress={signOut}
                   style={styles.logoutIcon}
                   name="exit-outline"
                   size={24}

@@ -67,13 +67,15 @@ export const authStateChangeUser = () => async (dispatch, getState) => {
   });
 };
 
-export const authSignOut = () => async (dispatch, getState) => {
+export const authSignOutUser = () => async (dispatch, getState) => {
   console.log("signOut");
+  // await signOut(auth);
+  // dispatch(authSlice.actions.authSignOut());
 
-  // try {
-  //   await signOut(auth);
-  //   // dispatch(authSlice.actions.authSignOut());
-  // } catch (error) {
-  //   console.log("error", error.message);
-  // }
+  try {
+    await signOut(auth);
+    dispatch(authSlice.actions.authSignOut());
+  } catch (error) {
+    console.log("error", error.message);
+  }
 };
