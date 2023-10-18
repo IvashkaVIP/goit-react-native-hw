@@ -1,5 +1,7 @@
 import React from "react";
 import "react-native-gesture-handler";
+import { PersistGate } from "redux-persist/integration/react";
+import {persistor} from "./redux/store"
 
 import { useFonts } from "expo-font";
 import { Provider } from "react-redux"
@@ -21,7 +23,9 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <Main/>
+      <PersistGate loading={null} persistor={persistor}>
+        <Main />
+      </PersistGate>
     </Provider>
   );
 }

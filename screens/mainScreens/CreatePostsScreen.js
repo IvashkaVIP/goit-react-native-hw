@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigation } from "@react-navigation/native";
 import {
   TouchableOpacity,
   StyleSheet,
@@ -33,7 +32,16 @@ export const CreatePostsScreen = ({ navigation }) => {
   const [statePhoto, setStatePhoto] = useState(initialStatePhoto);
   const [stateInput, setStateInput] = useState(initialStateInput);
 
-  // console.log(" InputName : >>>>>>>>>>>>>>>  ",stateInput.name);
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(statePhoto.url);
+    // console.log(" response ", response);
+    // const file = await response.blob();
+    // const postId = Date.now().toString();
+    // const imageRef = ref(storage, `postImage/${postId}`);
+    // await uploadBytes(imageRef, file);
+    // const processedPhoto = await getDownloadURL(imageRef);
+    // return processedPhoto;
+  };
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -49,7 +57,6 @@ export const CreatePostsScreen = ({ navigation }) => {
     });
 
     setStatePhoto((prevState) => ({ ...prevState, url: result.assets[0].uri }));
-    console.log("loadingImage >>>>>>>>>>>>>  ", statePhoto.url);
   };
 
   // -----------------------------   checking Location Permission
@@ -80,6 +87,7 @@ export const CreatePostsScreen = ({ navigation }) => {
   };
 
   const publishPhoto = () => {
+    uploadPhotoToServer();
     setStateInput(initialStateInput);
     if (statePhoto.url) navigation.navigate("Default", statePhoto);
   };
@@ -132,7 +140,6 @@ export const CreatePostsScreen = ({ navigation }) => {
             style={styles.textTitle}
             placeholder="Назва..."
             placeholderTextColor="#BDBDBD"
-            // onFocus={setIsShowKeyboard(true)}
             value={stateInput.name}
             onChangeText={(value) =>
               setStateInput((prevState) => ({
@@ -140,9 +147,7 @@ export const CreatePostsScreen = ({ navigation }) => {
                 name: value,
               }))
             }
-            // onSubmitEditing={handleSubmit}
-
-            onSubmitEditing={(event) => {
+           onSubmitEditing={(event) => {
               setStatePhoto((prevState) => ({
                 ...prevState,
                 name: event.nativeEvent.text,
@@ -162,8 +167,6 @@ export const CreatePostsScreen = ({ navigation }) => {
                   layout: value,
                 }))
               }
-              // onSubmitEditing={handleSubmit}
-
               onSubmitEditing={(event) =>
                 setStatePhoto((prevState) => ({
                   ...prevState,
