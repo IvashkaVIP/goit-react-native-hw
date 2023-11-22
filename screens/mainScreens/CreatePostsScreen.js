@@ -13,6 +13,9 @@ import { Camera } from "expo-camera";
 import * as Location from "expo-location";
 import * as ImagePicker from "expo-image-picker";
 
+import {db, storage} from "../../firebase/config"
+import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
+
 const initialStatePhoto = {
   url: "",
   name: "",
@@ -33,14 +36,20 @@ export const CreatePostsScreen = ({ navigation }) => {
   const [stateInput, setStateInput] = useState(initialStateInput);
 
   const uploadPhotoToServer = async () => {
-    const response = await fetch(statePhoto.url);
-    // console.log(" response ", response);
-    // const file = await response.blob();
-    // const postId = Date.now().toString();
-    // const imageRef = ref(storage, `postImage/${postId}`);
-    // await uploadBytes(imageRef, file);
-    // const processedPhoto = await getDownloadURL(imageRef);
-    // return processedPhoto;
+    try {
+      const response = await fetch(statePhoto.url);
+      // console.log(" response ", statePhoto.url);
+      const file = await response.blob();
+      const postId = Date.now().toString();
+      const imageRef = await ref(storage, `postImage/${postId}`);
+      await uploadBytes(imageRef, file);
+      // console.log("imgRef  >>>>>>>>>>  ", imageRef);
+      const processedPhoto = await getDownloadURL(imageRef);
+      return processedPhoto;
+    } catch (err) {
+      console.log(err);
+      console.log(err.message);
+    }
   };
 
   const keyboardHide = () => {
