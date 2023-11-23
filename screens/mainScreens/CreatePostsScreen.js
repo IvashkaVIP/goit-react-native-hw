@@ -33,7 +33,20 @@ export const CreatePostsScreen = ({ navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const cameraRef = useRef(null);
   const [statePhoto, setStatePhoto] = useState(initialStatePhoto);
-  const [stateInput, setStateInput] = useState(initialStateInput);
+  // const [stateInput, setStateInput] = useState(initialStateInput);
+
+  const setLocation = async () => {
+    let location = (await Location.getCurrentPositionAsync({})).coords;
+    setStatePhoto((prevState) => ({
+      ...prevState,
+      location: {
+        latitude: location.latitude,
+        longitude: location.longitude,
+      }
+    }));
+    // console.log("CreateScreen >>>>> Location >>>>>>> ", location);
+    // console.log("CreateScreen >>>>> statePhoto >>>>>>> ", statePhoto);
+  }
 
   const uploadPhotoToServer = async () => {
     try {
@@ -76,34 +89,43 @@ export const CreatePostsScreen = ({ navigation }) => {
         setErrorMsg("Permission to access location was denied");
         return;
       }
-      //  let location = await Location.getCurrentPositionAsync({});
-      //  setLocation(location);
+      // let location = (await Location.getCurrentPositionAsync({})).coords;      
+      // setStatePhoto((prevState) => ({
+      //   ...prevState,
+      //   location: {
+      //     latitude: location.latitude,
+      //     longitude: location.longitude,
+      //   }
+      // }));
+      // console.log("CreateScreen >>>>> Location >>>>>>> ", location);
+      // console.log("CreateScreen >>>>> statePhoto >>>>>>> ", statePhoto);
     })();
   }, []);
 
   const takePhoto = async () => {
     const newUrl = (await cameraRef.current.takePictureAsync()).uri;
-    const newLocation = await Location.getCurrentPositionAsync();
+    const newLocation = (await Location.getCurrentPositionAsync()).coords;
 
     setStatePhoto((prevState) => ({
       ...prevState,
       url: newUrl,
       location: {
-        latitude: newLocation.coords.latitude,
-        longitude: newLocation.coords.longitude,
+        latitude: newLocation.latitude,
+        longitude: newLocation.longitude,
       },
     }));
   };
 
   const publishPhoto = () => {
     uploadPhotoToServer();
-    setStateInput(initialStateInput);
+    // setStateInput(initialStateInput);
     if (statePhoto.url) navigation.navigate("Default", statePhoto);
+    console.log("CreateScreen >>>>> statePhoto >>>>>>> ", statePhoto);
   };
 
   const deletePhoto = () => {
     setStatePhoto(initialStatePhoto);
-    setStateInput(initialStateInput);
+    // setStateInput(initialStateInput);
   };
 
   useEffect(() => {
@@ -149,14 +171,13 @@ export const CreatePostsScreen = ({ navigation }) => {
             style={styles.textTitle}
             placeholder="Назва..."
             placeholderTextColor="#BDBDBD"
-            value={stateInput.name}
+            // value={stateInput.name}
+            value={statePhoto.name}
             onChangeText={(value) =>
-              setStateInput((prevState) => ({
-                ...prevState,
-                name: value,
-              }))
+              // setStateInput((prevState) => ({ ...prevState, name: value }))
+              setStatePhoto((prevState) => ({ ...prevState, name: value }))
             }
-           onSubmitEditing={(event) => {
+            onSubmitEditing={(event) => {
               setStatePhoto((prevState) => ({
                 ...prevState,
                 name: event.nativeEvent.text,
@@ -169,11 +190,12 @@ export const CreatePostsScreen = ({ navigation }) => {
               style={{ ...styles.textTitle, paddingLeft: 25 }}
               placeholder="Місцевість..."
               placeholderTextColor="#BDBDBD"
-              value={stateInput.layout}
+              // value={stateInput.layout}
+              value={statePhoto.description}
               onChangeText={(value) =>
-                setStateInput((prevState) => ({
+                setStatePhoto((prevState) => ({
                   ...prevState,
-                  layout: value,
+                  description: value,
                 }))
               }
               onSubmitEditing={(event) =>
@@ -317,3 +339,4 @@ const styles = StyleSheet.create({
 });
 
 export default CreatePostsScreen;
+

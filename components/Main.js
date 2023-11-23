@@ -22,7 +22,7 @@ useEffect(() => {
   dispatch(authStateChangeUser());
 }, []);
     
-console.log("Main >>>>>>>>>  ",store.getState())
+console.log("Main >>>>>>>>>  ",new Date()," >>>>   ",store.getState().auth)
 const routing = useRoute(stateChange);
        
     return <NavigationContainer>{routing}</NavigationContainer>;

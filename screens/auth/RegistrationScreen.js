@@ -28,7 +28,8 @@ export default function RegistrationScreen({ navigation }) {
   const dispatch = useDispatch();
 
   
-    const handleRegisterBtnPress = () => {
+  const handleRegisterBtnPress = () => {
+    console.log("RegisterPage >>> ", state);      
       dispatch(authSignUp(state));
       setState(initialState);
       // navigation.navigate("Home");

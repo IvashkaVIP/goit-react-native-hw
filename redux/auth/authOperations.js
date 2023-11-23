@@ -53,7 +53,7 @@ export const authStateChangeUser = () => async (dispatch, getState) => {
     // console.log("User ", user);
     if (user) {
       const { uid, displayName, email } = auth.currentUser;
-      // console.log(uid,"   ",displayName,"   ",email);
+      console.log(uid,"   ",displayName,"   ",email);
       dispatch(
         authSlice.actions.updateUserProfile({
           userId: uid,
