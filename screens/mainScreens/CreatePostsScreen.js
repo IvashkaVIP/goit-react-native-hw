@@ -48,20 +48,16 @@ export const CreatePostsScreen = ({ navigation }) => {
         latitude: location.latitude,
         longitude: location.longitude,
       }
-    }));
-    // console.log("CreateScreen >>>>> Location >>>>>>> ", location);
-    // console.log("CreateScreen >>>>> statePhoto >>>>>>> ", statePhoto);
+    }));    
   }
 
   const uploadPhotoToServer = async () => {
     try {
       const response = await fetch(statePhoto.url);
-      // console.log(" response ", statePhoto.url);
       const file = await response.blob();
       const postId = Date.now().toString();
       const imageRef = await ref(storage, `postImage/${postId}`);
       await uploadBytes(imageRef, file);
-      // console.log("imgRef  >>>>>>>>>>  ", imageRef);
       const processedPhoto = await getDownloadURL(imageRef);
       return processedPhoto;
     } catch (err) {
@@ -93,17 +89,7 @@ export const CreatePostsScreen = ({ navigation }) => {
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
         return;
-      }
-      // let location = (await Location.getCurrentPositionAsync({})).coords;      
-      // setStatePhoto((prevState) => ({
-      //   ...prevState,
-      //   location: {
-      //     latitude: location.latitude,
-      //     longitude: location.longitude,
-      //   }
-      // }));
-      // console.log("CreateScreen >>>>> Location >>>>>>> ", location);
-      // console.log("CreateScreen >>>>> statePhoto >>>>>>> ", statePhoto);
+      }      
     })();
   }, []);
 
@@ -125,7 +111,7 @@ export const CreatePostsScreen = ({ navigation }) => {
     await uploadPostToServer();
     // uploadPhotoToServer();
     // setStateInput(initialStateInput);
-    if (statePhoto.url) navigation.navigate("Default", statePhoto);
+    if (statePhoto.url) navigation.navigate("Default");
     // console.log("CreateScreen >>>>> statePhoto >>>>>>> ", statePhoto);
   };
 
@@ -133,15 +119,6 @@ export const CreatePostsScreen = ({ navigation }) => {
       try {
         const { name, description, location } = statePhoto;
         const photo = await uploadPhotoToServer();
-
-        console.log("Date: ", new Date());
-        console.log("photo: ", photo);
-        console.log("name: ", name);
-        console.log("description: ", description);
-        console.log("location: ", location);
-        console.log("nickname: ", nickname);
-        console.log("userId: ", userId);
-
         const createdPost = await addDoc(collection(db, "posts"), {
           photo,
           name,

@@ -7,6 +7,8 @@ import { auth } from "../../firebase/config";
 import { store } from "../../redux/store";
 import { useDispatch } from "react-redux";
 import { authSignOutUser } from "../../redux/auth/authOperations";
+import { doc, updateDoc, getDocs, collection } from "firebase/firestore";
+import { db, storage } from "../../firebase/config";
 
 const DefaultScreenPosts = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
@@ -15,11 +17,23 @@ const DefaultScreenPosts = ({ route, navigation }) => {
     dispatch(authSignOutUser());
   };
 
-  useEffect(() => {
-    if (route.params) setPosts((prevState) => [...prevState, route.params]);
-  }, [route.params]);
+  const getAllPost = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, "posts"));
+      const documents = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setPosts(documents);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
 
-  // console.log(" DefaultScreen posts[] >>>>>>>>>>>>>>>>>   ", posts);
+  useEffect(() => {
+    getAllPost();
+  }, []);
 
   useEffect(() => {
     navigation.setOptions({
@@ -72,7 +86,7 @@ const DefaultScreenPosts = ({ route, navigation }) => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={{ marginBottom: 32 }}>
-            <Image source={{ uri: item.url }} style={styles.image} />
+            <Image source={{ uri: item.photo }} style={styles.image} />
             <Text style={styles.textPhoto}>{item.name}</Text>
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}

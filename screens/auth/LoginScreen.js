@@ -25,11 +25,9 @@ export default function LoginScreen({navigation}) {
 
   const dispatch = useDispatch();
 
-const handleLoginBtnPress = () => {
-  console.log("LoginBtnPress >>>>>> ");
+const handleLoginBtnPress = () => {  
   dispatch(authSignIn(state));
-  setState(initialState);
-  // navigation.navigate("Home");
+  setState(initialState);  
 };
 
   const keyboardHide = () => {
@@ -45,8 +43,7 @@ const handleLoginBtnPress = () => {
     setIsShowKeyboard(false);    
     }
   
-  const handleRegisterBtnPress = () => {
-    console.log("RegistrationBtnPress >>>>>> ");
+  const handleRegisterBtnPress = () => {    
     navigation.navigate("Registration");
   };
 
