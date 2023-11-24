@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useSelector } from "react-redux";
+import { Auth } from "firebase/auth";
 import {
   TouchableOpacity,
   StyleSheet,
@@ -14,7 +16,8 @@ import * as Location from "expo-location";
 import * as ImagePicker from "expo-image-picker";
 
 import {db, storage} from "../../firebase/config"
-import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
+import { uploadBytes, ref, getDownloadURL} from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
 
 const initialStatePhoto = {
   url: "",
@@ -33,6 +36,8 @@ export const CreatePostsScreen = ({ navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const cameraRef = useRef(null);
   const [statePhoto, setStatePhoto] = useState(initialStatePhoto);
+  const {nickname, userId} = useSelector((state)=>state.auth);
+  
   // const [stateInput, setStateInput] = useState(initialStateInput);
 
   const setLocation = async () => {
@@ -116,17 +121,48 @@ export const CreatePostsScreen = ({ navigation }) => {
     }));
   };
 
-  const publishPhoto = () => {
-    uploadPhotoToServer();
+  const publishPhoto = async () => {
+    await uploadPostToServer();
+    // uploadPhotoToServer();
     // setStateInput(initialStateInput);
     if (statePhoto.url) navigation.navigate("Default", statePhoto);
-    console.log("CreateScreen >>>>> statePhoto >>>>>>> ", statePhoto);
+    // console.log("CreateScreen >>>>> statePhoto >>>>>>> ", statePhoto);
   };
+
+    const uploadPostToServer = async () => {
+      try {
+        const { name, description, location } = statePhoto;
+        const photo = await uploadPhotoToServer();
+
+        console.log("Date: ", new Date());
+        console.log("photo: ", photo);
+        console.log("name: ", name);
+        console.log("description: ", description);
+        console.log("location: ", location);
+        console.log("nickname: ", nickname);
+        console.log("userId: ", userId);
+
+        const createdPost = await addDoc(collection(db, "posts"), {
+          photo,
+          name,
+          description,
+          location,
+          nickname,
+          userId,
+        });
+
+        console.log("Document written with ID: ", createdPost.id);
+      } catch (error) {
+        console.error("Error adding document: ", error);
+      }
+    };
 
   const deletePhoto = () => {
     setStatePhoto(initialStatePhoto);
     // setStateInput(initialStateInput);
   };
+
+
 
   useEffect(() => {
     navigation.setOptions({
@@ -177,12 +213,12 @@ export const CreatePostsScreen = ({ navigation }) => {
               // setStateInput((prevState) => ({ ...prevState, name: value }))
               setStatePhoto((prevState) => ({ ...prevState, name: value }))
             }
-            onSubmitEditing={(event) => {
-              setStatePhoto((prevState) => ({
-                ...prevState,
-                name: event.nativeEvent.text,
-              }));
-            }}
+            // onSubmitEditing={(event) => {
+            //   setStatePhoto((prevState) => ({
+            //     ...prevState,
+            //     name: event.persist(),
+            //   }));
+            // }}
           />
 
           <View style={styles.textArea}>
@@ -198,12 +234,12 @@ export const CreatePostsScreen = ({ navigation }) => {
                   description: value,
                 }))
               }
-              onSubmitEditing={(event) =>
-                setStatePhoto((prevState) => ({
-                  ...prevState,
-                  description: event.nativeEvent.text,
-                }))
-              }
+              // onSubmitEditing={(event) =>
+              //   setStatePhoto((prevState) => ({
+              //     ...prevState,
+              //     description: event.persist(),
+              //   }))
+              // }
             />
             <Feather
               name="map-pin"
