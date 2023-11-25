@@ -14,10 +14,10 @@ import { FontAwesome, Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
 import * as ImagePicker from "expo-image-picker";
-
-import {db, storage} from "../../firebase/config"
-import { uploadBytes, ref, getDownloadURL} from "firebase/storage";
+import { db, storage } from "../../firebase/config"
 import { collection, addDoc } from "firebase/firestore";
+import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
+import { getUserId, getUserNick } from "../../redux/auth/authSelectors";
 
 const initialStatePhoto = {
   url: "",
@@ -35,21 +35,21 @@ const initialStateInput = {
 export const CreatePostsScreen = ({ navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const cameraRef = useRef(null);
-  const [statePhoto, setStatePhoto] = useState(initialStatePhoto);
-  const {nickname, userId} = useSelector((state)=>state.auth);
+  const [statePhoto, setStatePhoto] = useState(initialStatePhoto);  
+  const nickName = useSelector(getUserNick);
+  const userId = useSelector(getUserId);  
   
-  // const [stateInput, setStateInput] = useState(initialStateInput);
 
-  const setLocation = async () => {
-    let location = (await Location.getCurrentPositionAsync({})).coords;
-    setStatePhoto((prevState) => ({
-      ...prevState,
-      location: {
-        latitude: location.latitude,
-        longitude: location.longitude,
-      }
-    }));    
-  }
+  // const setLocation = async () => {
+  //   let location = (await Location.getCurrentPositionAsync({})).coords;
+  //   setStatePhoto((prevState) => ({
+  //     ...prevState,
+  //     location: {
+  //       latitude: location.latitude,
+  //       longitude: location.longitude,
+  //     }
+  //   }));    
+  // }
 
   const uploadPhotoToServer = async () => {
     try {
@@ -124,7 +124,7 @@ export const CreatePostsScreen = ({ navigation }) => {
           name,
           description,
           location,
-          nickname,
+          nickName,
           userId,
         });
 
@@ -135,11 +135,8 @@ export const CreatePostsScreen = ({ navigation }) => {
     };
 
   const deletePhoto = () => {
-    setStatePhoto(initialStatePhoto);
-    // setStateInput(initialStateInput);
+    setStatePhoto(initialStatePhoto);    
   };
-
-
 
   useEffect(() => {
     navigation.setOptions({
@@ -183,11 +180,9 @@ export const CreatePostsScreen = ({ navigation }) => {
           <TextInput
             style={styles.textTitle}
             placeholder="Назва..."
-            placeholderTextColor="#BDBDBD"
-            // value={stateInput.name}
+            placeholderTextColor="#BDBDBD"            
             value={statePhoto.name}
-            onChangeText={(value) =>
-              // setStateInput((prevState) => ({ ...prevState, name: value }))
+            onChangeText={(value) =>              
               setStatePhoto((prevState) => ({ ...prevState, name: value }))
             }
             // onSubmitEditing={(event) => {

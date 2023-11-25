@@ -19,8 +19,8 @@ export default MapScreen = ({ route, navigation }) => {
         initialRegion={{
           latitude,
           longitude,
-          latitudeDelta: 0.02,
-          longitudeDelta: 0.02,
+          latitudeDelta: 0.001,
+          longitudeDelta: 0.006,
         }}
       >
         

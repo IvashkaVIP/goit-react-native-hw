@@ -12,35 +12,69 @@ import {
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { Feather } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
+import { getUserNick } from "../../redux/auth/authSelectors";
+import { db, storage } from "../../firebase/config";
+import { addDoc,getDocs, collection } from "firebase/firestore";
 
 export default CommentsScreen = ({ route, navigation }) => {
+  const { postId } = route.params;
+  const [comment, setComment] = useState("");
+  const [allComments, setAllComments] = useState([]);
+  const nickName = useSelector(getUserNick);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [posts, setPosts] = useState([]);
-  const [currentComment, setCurrentComment] = useState("");
+
+ const creatComment = async () => {
+    try {
+      const commentsCollection = collection(db, "posts", postId, "comments");
+      await addDoc(commentsCollection, { comment, nickName });      
+      setComment("");
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
   
+  const getAllComments = async () => {
+      try {
+        const snapshot = await getDocs(
+          collection(db, "posts", postId, "comments")
+        );
+        const documents = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setAllComments(documents);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+  };
+
   useEffect(() => {
     navigation.setOptions({
       title: "Коментарі",
       headerTitleAlign: "center",
     });
+    getAllComments();
   }, []);
-  
-  useEffect(() => {
-    if (route.params) setPosts((prevState) => [...prevState, ...route.params]);
-  }, [route.params]);
 
-   const keyboardHide = () => {
-     setIsShowKeyboard(false);
-     Keyboard.dismiss();
-   };
+  // useEffect(() => {
+  //   if (route.params) setPosts((prevState) => [...prevState, ...route.params]);
+  // }, [route.params]);
 
-  console.log(" CommentsScreen posts[] >>>>>>>>>>>>>>>>>   ", posts);
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
+
+  // console.log(" CommentsScreen posts[] >>>>>>>>>>>>>>>>>   ", posts);
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
         {/* ----------------------------------------------------------PostsList */}
-        <FlatList
+        {/* <FlatList
           data={posts}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
@@ -48,7 +82,7 @@ export default CommentsScreen = ({ route, navigation }) => {
               <Image source={{ uri: item.url }} style={styles.image} />
             </View>
           )}
-        />
+        /> */}
 
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -60,8 +94,8 @@ export default CommentsScreen = ({ route, navigation }) => {
               style={styles.commentInput}
               placeholder="Коментувати..."
               placeholderTextColor="#BDBDBD"
-              value={currentComment}
-              onChangeText={setCurrentComment}
+              value={comment}
+              onChangeText={setComment}
             />
             <TouchableOpacity style={styles.commentBtn}>
               <Feather
@@ -70,7 +104,8 @@ export default CommentsScreen = ({ route, navigation }) => {
                 color="#FFFFFF"
                 onPress={() => {
                   Keyboard.dismiss();
-                  setCurrentComment("");
+                  creatComment();
+                  // setComment("");
                 }}
               />
             </TouchableOpacity>
