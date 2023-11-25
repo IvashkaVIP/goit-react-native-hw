@@ -15,74 +15,128 @@ import { Feather } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 import { getUserNick } from "../../redux/auth/authSelectors";
 import { db, storage } from "../../firebase/config";
-import { addDoc,getDocs, collection } from "firebase/firestore";
+import {
+  addDoc,
+  getDocs,
+  collection,
+  orderBy,
+  serverTimestamp,
+} from "firebase/firestore";
 
 export default CommentsScreen = ({ route, navigation }) => {
-  const { postId } = route.params;
+  const { postId, imageUrl } = route.params;
   const [comment, setComment] = useState("");
   const [allComments, setAllComments] = useState([]);
   const nickName = useSelector(getUserNick);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
- const creatComment = async () => {
+  const creatComment = async () => {
     try {
       const commentsCollection = collection(db, "posts", postId, "comments");
-      await addDoc(commentsCollection, { comment, nickName });      
+      await addDoc(commentsCollection, {
+        comment,
+        nickName,
+        date: serverTimestamp(),
+      });
       setComment("");
+      getAllComments();
     } catch (error) {
       console.log(error);
       throw error;
     }
   };
-  
+
   const getAllComments = async () => {
-      try {
-        const snapshot = await getDocs(
-          collection(db, "posts", postId, "comments")
-        );
-        const documents = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setAllComments(documents);
-      } catch (error) {
-        console.log(error);
-        throw error;
-      }
+    try {
+      const snapshot = await getDocs(
+        collection(db, "posts", postId, "comments"),
+        orderBy("date", "desc")
+      );
+      const documents = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setAllComments(documents);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   };
 
   useEffect(() => {
     navigation.setOptions({
       title: "Коментарі",
       headerTitleAlign: "center",
+      headerStyle: {
+        borderBottomWidth: 1,
+        borderColor: "#BDBDBD",
+      },
     });
     getAllComments();
-  }, []);
-
-  // useEffect(() => {
-  //   if (route.params) setPosts((prevState) => [...prevState, ...route.params]);
-  // }, [route.params]);
+  }, [allComments.length]);
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
 
-  // console.log(" CommentsScreen posts[] >>>>>>>>>>>>>>>>>   ", posts);
+  console.log(allComments);
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
-        {/* ----------------------------------------------------------PostsList */}
-        {/* <FlatList
-          data={posts}
+        <Image source={{ uri: imageUrl }} style={styles.image} />
+        {/* ----------------------------------------------------------CommentsList */}
+        <FlatList
+          style={{
+            width: "100%",
+            flex: 1,
+            backgroundColor: "aqua",
+            marginBottom: 100,
+          }}
+          data={allComments}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <View style={{ marginBottom: 32 }}>
-              <Image source={{ uri: item.url }} style={styles.image} />
+            <View
+              style={{
+                flexDirection: "row",
+                marginBottom: 24,
+              }}
+            >
+              <View
+                style={{
+                  flex: 1,
+                  borderRadius: 4,
+                  // backgroundColor: "rgba(0,0,0,0.03)",
+                  backgroundColor: "green",
+                  padding: 16,
+                }}
+              >
+                <Text style={styles.textComment}>{item.comment}</Text>
+                <Text style={styles.textDate}>
+                  {new Intl.DateTimeFormat("ru-RU", {
+                    year: "numeric",
+                    month: "numeric",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    // second: "numeric",
+                  }).format(item.date.toDate())}
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  backgroundColor: "red",
+                  width: 28,
+                  height: 28,
+                  marginLeft: 16,
+                  borderRadius: 100,
+                }}
+              ></View>
             </View>
           )}
-        /> */}
+        />
 
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -105,7 +159,6 @@ export default CommentsScreen = ({ route, navigation }) => {
                 onPress={() => {
                   Keyboard.dismiss();
                   creatComment();
-                  // setComment("");
                 }}
               />
             </TouchableOpacity>
@@ -118,7 +171,6 @@ export default CommentsScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 16,
@@ -127,16 +179,21 @@ const styles = StyleSheet.create({
   image: {
     width: 343,
     height: 240,
-    marginBottom: 8,
+    marginBottom: 32,
     borderRadius: 8,
   },
-  textPhoto: {
+  textComment: {
+    flex: 1,
     color: "#212121",
     fontFamily: "Roboto-Regular",
     fontStyle: "normal",
-    fontSize: 16,
-    lineHeight: 19,
-    marginBottom: 8,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  textDate: {
+    fontSize: 10,
+    color: "#BDBDBD",
+    marginTop: 8
   },
   commentInput: {
     padding: 16,

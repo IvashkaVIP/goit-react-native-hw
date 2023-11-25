@@ -100,7 +100,7 @@ const DefaultScreenPosts = ({ route, navigation }) => {
                   style={{
                     marginRight: 10,
                   }}
-                  onPress={() => navigation.navigate("Comments", {postId: item.id})}
+                  onPress={() => navigation.navigate("Comments", {postId: item.id, imageUrl: item.photo})}
                 />
                 <Text style={styles.textPhoto}>0</Text>
               </View>
