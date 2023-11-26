@@ -12,13 +12,14 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import {useDispatch} from "react-redux"
-import { authSignUp } from "../../redux/auth/authOperations"
+import { useDispatch } from "react-redux";
+import { authSignUp } from "../../redux/auth/authOperations";
 
 const initialState = {
   nickname: "",
   email: "",
   password: "",
+  showPassword: false,
 };
 
 export default function RegistrationScreen({ navigation }) {
@@ -27,22 +28,26 @@ export default function RegistrationScreen({ navigation }) {
 
   const dispatch = useDispatch();
 
-  
+  const togglePasswordVisibility = () => {
+    setState((prevState) => ({
+      ...prevState,
+      showPassword: !prevState.showPassword,
+    }));
+  };
+
   const handleRegisterBtnPress = () => {
-    console.log("RegisterPage >>> ", state);      
-      dispatch(authSignUp(state));
-      setState(initialState);
-      // navigation.navigate("Home");
-    };
-  
+    dispatch(authSignUp(state));
+    setState(initialState);
+  };
+
   const handleSubmit = () => {
     setIsShowKeyboard(false);
   };
 
   const keyboardHide = () => {
-  setIsShowKeyboard(false);
-  Keyboard.dismiss();
-};
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
 
   const handleFocus = () => {
     setIsShowKeyboard(true);
@@ -105,7 +110,7 @@ export default function RegistrationScreen({ navigation }) {
                   style={styles.input}
                   placeholder="Пароль"
                   placeholderTextColor="#BDBDBD"
-                  secureTextEntry={true}
+                  secureTextEntry={!state.showPassword}
                   onFocus={handleFocus}
                   value={state.password}
                   onChangeText={(value) =>
@@ -114,7 +119,11 @@ export default function RegistrationScreen({ navigation }) {
                   onSubmitEditing={handleSubmit}
                 />
 
-                <TouchableOpacity style={styles.password} activeOpacity={0.75}>
+                <TouchableOpacity
+                  style={styles.password}
+                  activeOpacity={0.75}
+                  onPress={togglePasswordVisibility}
+                >
                   <Text style={styles.showPassword}>Показати</Text>
                 </TouchableOpacity>
               </View>
@@ -148,7 +157,7 @@ export default function RegistrationScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         </ImageBackground>
-       </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 }
@@ -262,6 +271,3 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
 });
-{
-  /* <AntDesign name="closecircleo" size={24} color="black" />; */
-}

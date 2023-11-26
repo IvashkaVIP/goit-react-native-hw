@@ -12,38 +12,46 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { useDispatch } from "react-redux";
-import {authSignIn} from "../../redux/auth/authOperations"
+import { authSignIn } from "../../redux/auth/authOperations";
 
 const initialState = {
-  email: '',
-  password: '',
-}
+  email: "",
+  password: "",
+  showPassword: false,
+};
 
-export default function LoginScreen({navigation}) {
+export default function LoginScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
 
   const dispatch = useDispatch();
 
-const handleLoginBtnPress = () => {  
-  dispatch(authSignIn(state));
-  setState(initialState);  
-};
+  const togglePasswordVisibility = () => {
+    setState((prevState) => ({
+      ...prevState,
+      showPassword: !prevState.showPassword,
+    }));
+  };
+
+  const handleLoginBtnPress = () => {
+    dispatch(authSignIn(state));
+    setState(initialState);
+  };
 
   const keyboardHide = () => {
-  setIsShowKeyboard(false);
-  Keyboard.dismiss();
-};
-  
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
+
   const handleFocus = () => {
-    setIsShowKeyboard(true);    
+    setIsShowKeyboard(true);
   };
 
   const handleSubmit = () => {
-    setIsShowKeyboard(false);    
-    }
-  
-  const handleRegisterBtnPress = () => {    
+    setIsShowKeyboard(false);
+  };
+
+  const handleRegisterBtnPress = () => {
     navigation.navigate("Registration");
   };
 
@@ -80,7 +88,7 @@ const handleLoginBtnPress = () => {
                   style={styles.input}
                   placeholder="Пароль"
                   placeholderTextColor="#BDBDBD"
-                  secureTextEntry={true}
+                  secureTextEntry={!state.showPassword}
                   onFocus={handleFocus}
                   value={state.password}
                   onChangeText={(value) =>
@@ -89,7 +97,11 @@ const handleLoginBtnPress = () => {
                   onSubmitEditing={handleSubmit}
                 />
 
-                <TouchableOpacity style={styles.password} activeOpacity={0.75}>
+                <TouchableOpacity
+                  style={styles.password}
+                  activeOpacity={0.75}
+                  onPress={togglePasswordVisibility}
+                >
                   <Text style={styles.showPassword}>Показати</Text>
                 </TouchableOpacity>
               </View>
@@ -124,7 +136,7 @@ const handleLoginBtnPress = () => {
             </TouchableOpacity>
           </View>
         </ImageBackground>
-        </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 }

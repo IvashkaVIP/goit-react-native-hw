@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { FlatList } from "react-native-gesture-handler";
-import { signOut } from "firebase/auth";
-import { store } from "../../redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { authSignOutUser } from "../../redux/auth/authOperations";
 import { doc, updateDoc, getDocs, collection } from "firebase/firestore";
@@ -15,11 +13,11 @@ const DefaultScreenPosts = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const nickName = useSelector(getUserNick);
   const email = useSelector(getUserEmail);
-  // const signOut = () => {
-  //   dispatch(authSignOutUser());
-  // };
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
 
-  const getAllPost = async () => {
+  const getAllPosts = async () => {
     try {
       const snapshot = await getDocs(collection(db, "posts"));
       const documents = await Promise.all (
@@ -43,11 +41,27 @@ const DefaultScreenPosts = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    getAllPost();
-  }, []);
-
-  useEffect(() => {
-    navigation.setOptions(headerOfDefaultPosts);
+    getAllPosts();
+    navigation.setOptions({
+      headerTitle: "Публікації",
+      headerTintColor: "#212121",
+      headerTitleStyle: { fontSize: 17, fontFamily: "Roboto-Medium" },
+      headerTitleAlign: "center",
+      headerStyle: {
+        borderBottomWidth: 1,
+        borderColor: "#BDBDBD",
+      },
+      headerLeft: () => null,
+      headerRight: () => (
+        <Ionicons
+          onPress={signOut}
+          style={{ marginRight: 10 }}
+          name="exit-outline"
+          size={24}
+          color="#BDBDBD"
+        />
+      ),
+    });
   }, []);
 
   return (
@@ -117,27 +131,6 @@ const DefaultScreenPosts = ({ route, navigation }) => {
       />
     </View>
   );
-};
-
-const headerOfDefaultPosts = {
-  headerTitle: "Публікації",
-  headerTintColor: "#212121",
-  headerTitleStyle: { fontSize: 17, fontFamily: "Roboto-Medium" },
-  headerTitleAlign: "center",
-  headerStyle: {
-    borderBottomWidth: 1,
-    borderColor: "#BDBDBD",
-  },
-  headerLeft: () => null,
-  headerRight: () => (
-    <Ionicons
-      onPress={signOut}
-      style={{ marginRight: 10 }}
-      name="exit-outline"
-      size={24}
-      color="#BDBDBD"
-    />
-  ),
 };
 
 const styles = StyleSheet.create({

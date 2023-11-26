@@ -13,7 +13,7 @@ import {
 import { FlatList } from "react-native-gesture-handler";
 import { Feather } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
-import { getUserNick } from "../../redux/auth/authSelectors";
+import { getUserNick, getUserId } from "../../redux/auth/authSelectors";
 import { db, storage } from "../../firebase/config";
 import {
   addDoc,
@@ -27,8 +27,11 @@ export default CommentsScreen = ({ route, navigation }) => {
   const { postId, imageUrl } = route.params;
   const [comment, setComment] = useState("");
   const [allComments, setAllComments] = useState([]);
-  const nickName = useSelector(getUserNick);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const nickName = useSelector(getUserNick);
+  const userId = useSelector(getUserId);
+  
+  
 
   const creatComment = async () => {
     try {

@@ -20,6 +20,7 @@ export const authSignUp =
         authSlice.actions.updateUserProfile({
           userId: uid,
           nickname: displayName,
+          email
         })
       );
     } catch (err) {

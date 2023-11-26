@@ -17,7 +17,7 @@ import * as ImagePicker from "expo-image-picker";
 import { db, storage } from "../../firebase/config"
 import { collection, addDoc } from "firebase/firestore";
 import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
-import { getUserId, getUserNick } from "../../redux/auth/authSelectors";
+import { getUserNick } from "../../redux/auth/authSelectors";
 
 const initialStatePhoto = {
   url: "",
@@ -37,8 +37,6 @@ export const CreatePostsScreen = ({ navigation }) => {
   const cameraRef = useRef(null);
   const [statePhoto, setStatePhoto] = useState(initialStatePhoto);  
   const nickName = useSelector(getUserNick);
-  const userId = useSelector(getUserId);  
-  
 
   // const setLocation = async () => {
   //   let location = (await Location.getCurrentPositionAsync({})).coords;
