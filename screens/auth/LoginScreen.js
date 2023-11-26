@@ -22,6 +22,7 @@ const initialState = {
 
 export default function LoginScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [isFocused, setIsFocused] = useState("");
   const [state, setState] = useState(initialState);
 
   const dispatch = useDispatch();
@@ -43,16 +44,21 @@ export default function LoginScreen({ navigation }) {
     Keyboard.dismiss();
   };
 
-  const handleFocus = () => {
-    setIsShowKeyboard(true);
-  };
-
   const handleSubmit = () => {
     setIsShowKeyboard(false);
   };
 
   const handleRegisterBtnPress = () => {
     navigation.navigate("Registration");
+  };
+
+  const handleFocus = (name) => {
+    setIsShowKeyboard(true);
+    setIsFocused(name);
+  };
+
+  const handleBlur = () => {
+    setIsFocused("");
   };
 
   return (
@@ -73,10 +79,17 @@ export default function LoginScreen({ navigation }) {
 
               <View style={styles.form}>
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      borderColor:
+                        isFocused === "email" ? "#FF6C00" : "#BDBDBD",
+                    },
+                  ]}
                   placeholder="Адреса електронної пошти"
                   placeholderTextColor="#BDBDBD"
-                  onFocus={handleFocus}
+                  onFocus={() => handleFocus("email")}
+                  onBlur={handleBlur}
                   value={state.email}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, email: value }))
@@ -85,11 +98,18 @@ export default function LoginScreen({ navigation }) {
                 />
 
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      borderColor:
+                        isFocused === "password" ? "#FF6C00" : "#BDBDBD",
+                    },
+                  ]}
                   placeholder="Пароль"
                   placeholderTextColor="#BDBDBD"
                   secureTextEntry={!state.showPassword}
-                  onFocus={handleFocus}
+                  onFocus={() => handleFocus("password")}
+                  onBlur={handleBlur}
                   value={state.password}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, password: value }))

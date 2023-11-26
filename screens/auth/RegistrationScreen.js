@@ -24,6 +24,7 @@ const initialState = {
 
 export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [isFocused, setIsFocused] = useState('');
   const [state, setState] = useState(initialState);
 
   const dispatch = useDispatch();
@@ -49,13 +50,18 @@ export default function RegistrationScreen({ navigation }) {
     Keyboard.dismiss();
   };
 
-  const handleFocus = () => {
-    setIsShowKeyboard(true);
-  };
-
   const handleLoginBtnPress = () => {
     navigation.navigate("Login");
   };
+
+  const handleFocus = (name) => {
+    setIsShowKeyboard(true);
+    setIsFocused(name);
+  };
+
+  const handleBlur = () => {
+    setIsFocused('');
+  }
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -83,10 +89,17 @@ export default function RegistrationScreen({ navigation }) {
 
               <View style={styles.form}>
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      borderColor:
+                        isFocused === "login" ? "#FF6C00" : "#BDBDBD",
+                    },
+                  ]}
                   placeholder="Логін"
                   placeholderTextColor="#BDBDBD"
-                  onFocus={handleFocus}
+                  onFocus={() => handleFocus("login")}
+                  onBlur={handleBlur}
                   value={state.nickname}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, nickname: value }))
@@ -95,10 +108,17 @@ export default function RegistrationScreen({ navigation }) {
                 />
 
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      borderColor:
+                        isFocused === "email" ? "#FF6C00" : "#BDBDBD",
+                    },
+                  ]}
                   placeholder="Адреса електронної пошти"
                   placeholderTextColor="#BDBDBD"
-                  onFocus={handleFocus}
+                  onFocus={() => handleFocus("email")}
+                  onBlur={handleBlur}
                   value={state.email}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, email: value }))
@@ -107,11 +127,15 @@ export default function RegistrationScreen({ navigation }) {
                 />
 
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    { borderColor: isFocused==='password' ? "#FF6C00" : "#BDBDBD" },
+                  ]}
                   placeholder="Пароль"
                   placeholderTextColor="#BDBDBD"
                   secureTextEntry={!state.showPassword}
-                  onFocus={handleFocus}
+                  onFocus={() => handleFocus("password")}
+                  onBlur={handleBlur}
                   value={state.password}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, password: value }))
