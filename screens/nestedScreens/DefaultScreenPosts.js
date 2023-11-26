@@ -3,27 +3,38 @@ import { View, Text, StyleSheet, Image } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { FlatList } from "react-native-gesture-handler";
 import { signOut } from "firebase/auth";
-import { auth } from "../../firebase/config";
 import { store } from "../../redux/store";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authSignOutUser } from "../../redux/auth/authOperations";
 import { doc, updateDoc, getDocs, collection } from "firebase/firestore";
-import { db, storage } from "../../firebase/config";
+import { db, auth } from "../../firebase/config";
+import { getUserEmail, getUserNick } from "../../redux/auth/authSelectors";
 
 const DefaultScreenPosts = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
   const dispatch = useDispatch();
-  const signOut = () => {
-    dispatch(authSignOutUser());
-  };
+  const nickName = useSelector(getUserNick);
+  const email = useSelector(getUserEmail);
+  // const signOut = () => {
+  //   dispatch(authSignOutUser());
+  // };
 
   const getAllPost = async () => {
     try {
       const snapshot = await getDocs(collection(db, "posts"));
-      const documents = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const documents = await Promise.all (
+        snapshot.docs.map(async (doc) => {
+          const comments = (
+            await getDocs(collection(db, `posts/${doc.id}/comments`))
+          ).size ?? 0;
+          return {
+            id: doc.id,
+            ...doc.data(),
+            comments,
+          };
+        })
+      );
+
       setPosts(documents);
     } catch (error) {
       console.log(error);
@@ -36,48 +47,20 @@ const DefaultScreenPosts = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
-    navigation.setOptions({
-      headerTitle: "Публікації",
-      headerTintColor: "#212121",
-      headerTitleStyle: { fontSize: 17, fontFamily: "Roboto-Medium" },
-      headerTitleAlign: "center",
-      headerStyle: {
-        borderBottomWidth: 1,
-        borderColor: "#BDBDBD",
-      },
-      headerLeft: () => null,
-      headerRight: () => (
-        <Ionicons
-          onPress={signOut}
-          style={{ marginRight: 10 }}
-          name="exit-outline"
-          size={24}
-          color="#BDBDBD"
-        />
-      ),
-    });
+    navigation.setOptions(headerOfDefaultPosts);
   }, []);
 
   return (
     <View style={styles.container}>
       {/* ---------------------------------------------------- authUser */}
-      <View
-        style={{
-          flexDirection: "row",
-          width: "100%",
-          alignItems: "center",
-          marginBottom: 32,
-        }}
-      >
+      <View style={styles.wrapperUserInfo}>
         <Image
-          style={{ width: 60, height: 60, borderRadius: 16, marginRight: 8 }}
-          source={require("../../assets/images/avatar.jpg")}
+          style={styles.userAvatar}
+          source={require("../../assets/images/AvatarDefault.jpg")}
         />
         <View>
-          <Text style={{ fontSize: 13, fontWeight: "bold" }}>
-            Natali Romanova
-          </Text>
-          <Text style={{ fontSize: 11 }}>email@example.com</Text>
+          <Text style={{ fontSize: 13, fontWeight: "bold" }}>{nickName}</Text>
+          <Text style={{ fontSize: 11 }}>{email}</Text>
         </View>
       </View>
       {/* ----------------------------------------------------------PostsList */}
@@ -96,13 +79,18 @@ const DefaultScreenPosts = ({ route, navigation }) => {
                 <Feather
                   name="message-circle"
                   size={24}
-                  color="#BDBDBD"
+                  color= { item.comments ? "#FF6C00" : "#BDBDBD"  }
                   style={{
                     marginRight: 10,
                   }}
-                  onPress={() => navigation.navigate("Comments", {postId: item.id, imageUrl: item.photo})}
+                  onPress={() =>
+                    navigation.navigate("Comments", {
+                      postId: item.id,
+                      imageUrl: item.photo,
+                    })
+                  }
                 />
-                <Text style={styles.textPhoto}>0</Text>
+                <Text style={styles.textPhoto}>{item.comments}</Text>
               </View>
 
               <View style={{ flexDirection: "row" }}>
@@ -131,6 +119,27 @@ const DefaultScreenPosts = ({ route, navigation }) => {
   );
 };
 
+const headerOfDefaultPosts = {
+  headerTitle: "Публікації",
+  headerTintColor: "#212121",
+  headerTitleStyle: { fontSize: 17, fontFamily: "Roboto-Medium" },
+  headerTitleAlign: "center",
+  headerStyle: {
+    borderBottomWidth: 1,
+    borderColor: "#BDBDBD",
+  },
+  headerLeft: () => null,
+  headerRight: () => (
+    <Ionicons
+      onPress={signOut}
+      style={{ marginRight: 10 }}
+      name="exit-outline"
+      size={24}
+      color="#BDBDBD"
+    />
+  ),
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -139,6 +148,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 16,
     paddingTop: 32,
+  },
+  wrapperUserInfo: {
+    flexDirection: "row",
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 32,
+  },
+  userAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 16,
+    marginRight: 8,
   },
   image: {
     width: 343,

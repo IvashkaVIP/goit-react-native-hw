@@ -5,9 +5,6 @@ import {
   updateProfile,
   signOut,
 } from "firebase/auth";
-
-import { store } from "../store";
-
 import { auth } from "../../firebase/config";
 import { authSlice } from "./authSlice";
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import {
   TouchableWithoutFeedback,
@@ -8,13 +9,15 @@ import {
   Keyboard,
   Text,
   View,
+  Image,
 } from "react-native";
 import { auth } from "../../firebase/config";
-import { useDispatch } from "react-redux";
 import { authSignOutUser } from "../../redux/auth/authOperations";
- 
+import { getUserNick } from "../../redux/auth/authSelectors";
+
 export default ProfileScreen = ({ navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const nickName = useSelector(getUserNick);
   const dispatch = useDispatch();
   const signOut = () => {
     dispatch(authSignOutUser());
@@ -26,10 +29,10 @@ export default ProfileScreen = ({ navigation }) => {
     });
   }, []);
 
- const keyboardHide = () => {
-   setIsShowKeyboard(false);
-   Keyboard.dismiss();
- };
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -44,13 +47,19 @@ export default ProfileScreen = ({ navigation }) => {
           >
             <View style={styles.content}>
               <View style={styles.title}>
-                <View style={styles.avatar}>
-                  <AntDesign
-                    style={styles.add}
-                    name="pluscircleo"
-                    size={24}
-                    color="black"
+                <View style={styles.containerAvatar}>
+                  <Image
+                    style={styles.imageAvatar}
+                    source={require("../../assets/images/AvatarDefault.jpg")}
                   />
+                  <View style={styles.containerAddIcon}>
+                    <AntDesign
+                      style={styles.addIcon}
+                      name="pluscircleo"
+                      size={24}
+                      color="black"
+                    />
+                  </View>
                 </View>
 
                 <Ionicons
@@ -60,7 +69,7 @@ export default ProfileScreen = ({ navigation }) => {
                   size={24}
                   color="#BDBDBD"
                 />
-                <Text style={styles.mainText}>Ім'я користувача</Text>
+                <Text style={styles.mainText}>{nickName}</Text>
               </View>
             </View>
           </KeyboardAvoidingView>
@@ -78,37 +87,42 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: "cover",
     justifyContent: "flex-end",
+    paddingTop: 77,
   },
   content: {
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
-  avatar: {
+  containerAvatar: {
     width: 120,
     height: 120,
     backgroundColor: "#f6f6f6",
     borderRadius: 16,
     position: "absolute",
-
-    bottom: 100,
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-
+    top: -60,    
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.75,
     shadowRadius: 4,
     elevation: 4,
   },
-  add: {
+  imageAvatar: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+    borderRadius: 16,
+  },
+  containerAddIcon: {
     width: 25,
     height: 25,
-    position: "relative",
-    bottom: 16,
-    left: 12,
-    color: "#FF6C00",
+    position: "absolute",
+    bottom: 14,
+    right: -12,
+    backgroundColor: "white",
+    borderRadius: 100,
   },
+  addIcon: { color: "#FF6C00" },
   logoutIcon: {
     bottom: 45,
     left: 170,
@@ -134,4 +148,3 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
 });
-

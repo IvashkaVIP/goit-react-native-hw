@@ -64,14 +64,10 @@ export default CommentsScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    navigation.setOptions({
-      title: "Коментарі",
-      headerTitleAlign: "center",
-      headerStyle: {
-        borderBottomWidth: 1,
-        borderColor: "#BDBDBD",
-      },
-    });
+    navigation.setOptions(headerOfComments);
+  }, []);
+
+  useEffect(() => {
     getAllComments();
   }, [allComments.length]);
 
@@ -80,40 +76,20 @@ export default CommentsScreen = ({ route, navigation }) => {
     Keyboard.dismiss();
   };
 
-  console.log(allComments);
-
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
         <Image source={{ uri: imageUrl }} style={styles.image} />
         {/* ----------------------------------------------------------CommentsList */}
         <FlatList
-          style={{
-            width: "100%",
-            flex: 1,
-            backgroundColor: "aqua",
-            marginBottom: 100,
-          }}
+          style={styles.flatListComments}
           data={allComments}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <View
-              style={{
-                flexDirection: "row",
-                marginBottom: 24,
-              }}
-            >
-              <View
-                style={{
-                  flex: 1,
-                  borderRadius: 4,
-                  // backgroundColor: "rgba(0,0,0,0.03)",
-                  backgroundColor: "green",
-                  padding: 16,
-                }}
-              >
+            <View style={styles.wrapperComment}>
+              <View style={styles.textWrapperComment}>
                 <Text style={styles.textComment}>{item.comment}</Text>
-                <Text style={styles.textDate}>
+                <Text style={styles.dateComment}>
                   {new Intl.DateTimeFormat("ru-RU", {
                     year: "numeric",
                     month: "numeric",
@@ -124,16 +100,12 @@ export default CommentsScreen = ({ route, navigation }) => {
                   }).format(item.date.toDate())}
                 </Text>
               </View>
-
-              <View
-                style={{
-                  backgroundColor: "red",
-                  width: 28,
-                  height: 28,
-                  marginLeft: 16,
-                  borderRadius: 100,
-                }}
-              ></View>
+              <View style={styles.avatarWrapperComment}>
+                <Image
+                  style={styles.avatarComment}
+                  source={require("../../assets/images/AvatarDefault.jpg")}
+                />
+              </View>
             </View>
           )}
         />
@@ -168,6 +140,16 @@ export default CommentsScreen = ({ route, navigation }) => {
     </TouchableWithoutFeedback>
   );
 };
+
+const headerOfComments = {
+  title: "Коментарі",
+  headerTitleAlign: "center",
+  headerStyle: {
+    borderBottomWidth: 1,
+    borderColor: "#BDBDBD",
+  },
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -182,6 +164,33 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     borderRadius: 8,
   },
+  flatListComments: {
+    width: "100%",
+    flex: 1,
+    marginBottom: 100,
+  },
+  wrapperComment: {
+    flexDirection: "row",
+    marginBottom: 24,
+  },
+  textWrapperComment: {
+    flex: 1,
+    borderRadius: 4,
+    backgroundColor: "rgba(0,0,0,0.03)",
+    padding: 16,
+  },
+  avatarWrapperComment: {
+    backgroundColor: "#BDBDBD",
+    width: 28,
+    height: 28,
+    marginLeft: 16,
+    borderRadius: 100,
+  },
+  avatarComment: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 100,
+  },
   textComment: {
     flex: 1,
     color: "#212121",
@@ -190,10 +199,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
   },
-  textDate: {
+  dateComment: {
     fontSize: 10,
     color: "#BDBDBD",
-    marginTop: 8
+    marginTop: 8,
   },
   commentInput: {
     padding: 16,
