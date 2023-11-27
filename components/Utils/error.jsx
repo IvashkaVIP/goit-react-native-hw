@@ -28,15 +28,16 @@ export default function Error({ resetError, errorMessage }) {
         <Text
           style={{
             flex: 1,
+            padding: 16,
             justifyContent: "center",
             alignItems: "center",
             position: "absolute",
             top: "50%",
             left: "50%",
             marginLeft: -140,
-            marginTop: -50,
+            // marginTop: -50,
             width: 280,
-            height: 100,
+
             backgroundColor: "red",
             borderRadius: 25,
             color: "white",
@@ -44,10 +45,13 @@ export default function Error({ resetError, errorMessage }) {
             fontWeight: "600",
             textAlign: "center",
             textAlignVertical: "center",
-            
           }}
         >
           {errorMessage}
+          {"\n"}
+          {"\n"} probably wrong login or password
+          {"\n"}
+          {"\n"} all fields must be filled in
         </Text>
       )}
     </>
