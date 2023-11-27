@@ -12,40 +12,103 @@ import {
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { Feather } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
+import { getUserNick, getUserId } from "../../redux/auth/authSelectors";
+import { db, storage } from "../../firebase/config";
+import {
+  addDoc,
+  getDocs,
+  collection,
+  orderBy,
+  serverTimestamp,
+} from "firebase/firestore";
 
 export default CommentsScreen = ({ route, navigation }) => {
+  const { postId, imageUrl } = route.params;
+  const [comment, setComment] = useState("");
+  const [allComments, setAllComments] = useState([]);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [posts, setPosts] = useState([]);
-  const [currentComment, setCurrentComment] = useState("");
+  const nickName = useSelector(getUserNick);
+  const userId = useSelector(getUserId);
   
+  
+
+  const creatComment = async () => {
+    try {
+      const commentsCollection = collection(db, "posts", postId, "comments");
+      await addDoc(commentsCollection, {
+        comment,
+        nickName,
+        date: serverTimestamp(),
+      });
+      setComment("");
+      getAllComments();
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+
+  const getAllComments = async () => {
+    try {
+      const snapshot = await getDocs(
+        collection(db, "posts", postId, "comments"),
+        orderBy("date", "desc")
+      );
+      const documents = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setAllComments(documents);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
-    navigation.setOptions({
-      title: "Коментарі",
-      headerTitleAlign: "center",
-    });
+    navigation.setOptions(headerOfComments);
   }, []);
-  
+
   useEffect(() => {
-    if (route.params) setPosts((prevState) => [...prevState, ...route.params]);
-  }, [route.params]);
+    getAllComments();
+  }, [allComments.length]);
 
-   const keyboardHide = () => {
-     setIsShowKeyboard(false);
-     Keyboard.dismiss();
-   };
-
-  console.log(" CommentsScreen posts[] >>>>>>>>>>>>>>>>>   ", posts);
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
-        {/* ----------------------------------------------------------PostsList */}
+        <Image source={{ uri: imageUrl }} style={styles.image} />
+        {/* ----------------------------------------------------------CommentsList */}
         <FlatList
-          data={posts}
+          style={styles.flatListComments}
+          data={allComments}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <View style={{ marginBottom: 32 }}>
-              <Image source={{ uri: item.url }} style={styles.image} />
+            <View style={styles.wrapperComment}>
+              <View style={styles.textWrapperComment}>
+                <Text style={styles.textComment}>{item.comment}</Text>
+                <Text style={styles.dateComment}>
+                  {new Intl.DateTimeFormat("ru-RU", {
+                    year: "numeric",
+                    month: "numeric",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    // second: "numeric",
+                  }).format(item.date.toDate())}
+                </Text>
+              </View>
+              <View style={styles.avatarWrapperComment}>
+                <Image
+                  style={styles.avatarComment}
+                  source={require("../../assets/images/AvatarDefault.jpg")}
+                />
+              </View>
             </View>
           )}
         />
@@ -60,8 +123,8 @@ export default CommentsScreen = ({ route, navigation }) => {
               style={styles.commentInput}
               placeholder="Коментувати..."
               placeholderTextColor="#BDBDBD"
-              value={currentComment}
-              onChangeText={setCurrentComment}
+              value={comment}
+              onChangeText={setComment}
             />
             <TouchableOpacity style={styles.commentBtn}>
               <Feather
@@ -70,7 +133,7 @@ export default CommentsScreen = ({ route, navigation }) => {
                 color="#FFFFFF"
                 onPress={() => {
                   Keyboard.dismiss();
-                  setCurrentComment("");
+                  creatComment();
                 }}
               />
             </TouchableOpacity>
@@ -80,10 +143,19 @@ export default CommentsScreen = ({ route, navigation }) => {
     </TouchableWithoutFeedback>
   );
 };
+
+const headerOfComments = {
+  title: "Коментарі",
+  headerTitleAlign: "center",
+  headerStyle: {
+    borderBottomWidth: 1,
+    borderColor: "#BDBDBD",
+  },
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 16,
@@ -92,16 +164,48 @@ const styles = StyleSheet.create({
   image: {
     width: 343,
     height: 240,
-    marginBottom: 8,
+    marginBottom: 32,
     borderRadius: 8,
   },
-  textPhoto: {
+  flatListComments: {
+    width: "100%",
+    flex: 1,
+    marginBottom: 100,
+  },
+  wrapperComment: {
+    flexDirection: "row",
+    marginBottom: 24,
+  },
+  textWrapperComment: {
+    flex: 1,
+    borderRadius: 4,
+    backgroundColor: "rgba(0,0,0,0.03)",
+    padding: 16,
+  },
+  avatarWrapperComment: {
+    backgroundColor: "#BDBDBD",
+    width: 28,
+    height: 28,
+    marginLeft: 16,
+    borderRadius: 100,
+  },
+  avatarComment: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 100,
+  },
+  textComment: {
+    flex: 1,
     color: "#212121",
     fontFamily: "Roboto-Regular",
     fontStyle: "normal",
-    fontSize: 16,
-    lineHeight: 19,
-    marginBottom: 8,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  dateComment: {
+    fontSize: 10,
+    color: "#BDBDBD",
+    marginTop: 8,
   },
   commentInput: {
     padding: 16,

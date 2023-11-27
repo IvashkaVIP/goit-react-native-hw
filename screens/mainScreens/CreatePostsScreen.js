@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 import {
   TouchableOpacity,
   StyleSheet,
@@ -13,6 +13,10 @@ import { FontAwesome, Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
 import * as ImagePicker from "expo-image-picker";
+import { db, storage } from "../../firebase/config";
+import { collection, addDoc } from "firebase/firestore";
+import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
+import { getUserId, getUserNick } from "../../redux/auth/authSelectors";
 
 const initialStatePhoto = {
   url: "",
@@ -23,17 +27,62 @@ const initialStatePhoto = {
     longitude: null,
   },
 };
-const initialStateInput = {
-  name: "",
-  layout: "",
-};
-export const CreatePostsScreen = ({ navigation }) => {
+
+const CreatePostsScreen = ({ navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const cameraRef = useRef(null);
   const [statePhoto, setStatePhoto] = useState(initialStatePhoto);
-  const [stateInput, setStateInput] = useState(initialStateInput);
+  const nickName = useSelector(getUserNick);
+  const userId = useSelector(getUserId);
 
-  // console.log(" InputName : >>>>>>>>>>>>>>>  ",stateInput.name);
+  // -----------------------------   checking Location Permission
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    navigation.setOptions({
+      tabBarStyle: { display: "none" },
+      headerTitle: "Створити публікацію",
+      headerTintColor: "#212121",
+      headerTitleStyle: { fontSize: 17, fontFamily: "Roboto-Medium" },
+      headerTitleAlign: "center",
+      headerStyle: {
+        borderBottomWidth: 1,
+        borderBottomColor: "gray",
+      },
+      headerLeft: (focused, size, color) => (
+        <Feather
+          style={{ marginLeft: 16 }}
+          onPress={() => navigation.navigate("Default")}
+          name="arrow-left"
+          size={24}
+          color="rgba(33, 33, 33, 0.8)"
+        />
+      ),
+    });
+  }, []);
+
+  const uploadPhotoToServer = async () => {
+    try {
+      const response = await fetch(statePhoto.url);
+      const file = await response.blob();
+      const postId = Date.now().toString();
+      const imageRef = await ref(storage, `postImage/${postId}`);
+      await uploadBytes(imageRef, file);
+      const processedPhoto = await getDownloadURL(imageRef);
+      return processedPhoto;
+    } catch (err) {
+      console.log(err);
+      console.log(err.message);
+    }
+  };
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -47,73 +96,52 @@ export const CreatePostsScreen = ({ navigation }) => {
       aspect: [4, 3],
       quality: 1,
     });
-
     setStatePhoto((prevState) => ({ ...prevState, url: result.assets[0].uri }));
-    console.log("loadingImage >>>>>>>>>>>>>  ", statePhoto.url);
   };
-
-  // -----------------------------   checking Location Permission
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-      //  let location = await Location.getCurrentPositionAsync({});
-      //  setLocation(location);
-    })();
-  }, []);
 
   const takePhoto = async () => {
     const newUrl = (await cameraRef.current.takePictureAsync()).uri;
-    const newLocation = await Location.getCurrentPositionAsync();
+    const newLocation = (await Location.getCurrentPositionAsync()).coords;
 
     setStatePhoto((prevState) => ({
       ...prevState,
       url: newUrl,
       location: {
-        latitude: newLocation.coords.latitude,
-        longitude: newLocation.coords.longitude,
+        latitude: newLocation.latitude,
+        longitude: newLocation.longitude,
       },
     }));
   };
 
-  const publishPhoto = () => {
-    setStateInput(initialStateInput);
-    if (statePhoto.url) navigation.navigate("Default", statePhoto);
+  const publishPhoto = async () => {
+    await uploadPostToServer();
+    if (statePhoto.url) navigation.navigate("Default");
+  };
+
+  const uploadPostToServer = async () => {
+    try {
+      const { name, description, location } = statePhoto;      
+      const photo = await uploadPhotoToServer();
+      const createdPost = await addDoc(collection(db, "posts"), {
+        photo,
+        name,
+        description,
+        location,
+        nickName,
+        userId,
+      });
+
+      console.log("Document written with ID: ", createdPost.id);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
   };
 
   const deletePhoto = () => {
     setStatePhoto(initialStatePhoto);
-    setStateInput(initialStateInput);
   };
 
-  useEffect(() => {
-    navigation.setOptions({
-      tabBarStyle: { display: "none" },
-      headerTitle: "Створити публікацію",
-      headerTintColor: "#212121",
-      headerTitleStyle: { fontSize: 17, fontFamily: "Roboto-Medium" },
-      headerTitleAlign: "center",
-      headerStyle: {
-        borderBottomWidth: 1,
-        borderBottomColor: "gray",
-      },
-
-      headerLeft: (focused, size, color) => (
-        <Feather
-          style={{ marginLeft: 16 }}
-          onPress={() => navigation.navigate("Default")}
-          name="arrow-left"
-          size={24}
-          color="rgba(33, 33, 33, 0.8)"
-        />
-      ),
-    });
-  }, []);
-
-  return (
+    return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
         {/* --------------------------------------  блок камера  */}
@@ -132,42 +160,22 @@ export const CreatePostsScreen = ({ navigation }) => {
             style={styles.textTitle}
             placeholder="Назва..."
             placeholderTextColor="#BDBDBD"
-            // onFocus={setIsShowKeyboard(true)}
-            value={stateInput.name}
+            value={statePhoto.name}
             onChangeText={(value) =>
-              setStateInput((prevState) => ({
-                ...prevState,
-                name: value,
-              }))
+              setStatePhoto((prevState) => ({ ...prevState, name: value }))
             }
-            // onSubmitEditing={handleSubmit}
-
-            onSubmitEditing={(event) => {
-              setStatePhoto((prevState) => ({
-                ...prevState,
-                name: event.nativeEvent.text,
-              }));
-            }}
           />
 
           <View style={styles.textArea}>
             <TextInput
               style={{ ...styles.textTitle, paddingLeft: 25 }}
               placeholder="Місцевість..."
-              placeholderTextColor="#BDBDBD"
-              value={stateInput.layout}
+              placeholderTextColor="#BDBDBD"              
+              value={statePhoto.description}
               onChangeText={(value) =>
-                setStateInput((prevState) => ({
-                  ...prevState,
-                  layout: value,
-                }))
-              }
-              // onSubmitEditing={handleSubmit}
-
-              onSubmitEditing={(event) =>
                 setStatePhoto((prevState) => ({
                   ...prevState,
-                  description: event.nativeEvent.text,
+                  description: value,
                 }))
               }
             />
@@ -303,5 +311,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
 });
+
 
 export default CreatePostsScreen;

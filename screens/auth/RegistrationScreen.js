@@ -12,38 +12,64 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
+import { authSignUp } from "../../redux/auth/authOperations";
+import Error from "../../components/Utils/error";
 
 const initialState = {
-  login: "",
+  nickname: "",
   email: "",
   password: "",
+  showPassword: false,
 };
 
 export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [isFocused, setIsFocused] = useState("");
+  const [error, setError] = useState("");
   const [state, setState] = useState(initialState);
+  const dispatch = useDispatch();
 
-const keyboardHide = () => {
-  setIsShowKeyboard(false);
-  Keyboard.dismiss();
-};
+  const resetError = () => {
+    setError('');
+  };
+  
+  const handleRegisterBtnPress = async () => {
+    try {
+      await dispatch(authSignUp(state));
+      setState(initialState);
+    } catch (er) {
+      setError(er.message);
+    }
+  };
 
-
-  const handleFocus = () => {
-    setIsShowKeyboard(true);
+  const togglePasswordVisibility = () => {
+    setState((prevState) => ({
+      ...prevState,
+      showPassword: !prevState.showPassword,
+    }));
   };
 
   const handleSubmit = () => {
     setIsShowKeyboard(false);
   };
 
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
+
   const handleLoginBtnPress = () => {
     navigation.navigate("Login");
   };
 
-  const handleRegisterBtnPress = () => {
-    setState(initialState);
-    navigation.navigate("Home");
+  const handleFocus = (name) => {
+    setIsShowKeyboard(true);
+    setIsFocused(name);
+  };
+
+  const handleBlur = () => {
+    setIsFocused("");
   };
 
   return (
@@ -72,22 +98,36 @@ const keyboardHide = () => {
 
               <View style={styles.form}>
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      borderColor:
+                        isFocused === "login" ? "#FF6C00" : "#BDBDBD",
+                    },
+                  ]}
                   placeholder="Логін"
                   placeholderTextColor="#BDBDBD"
-                  onFocus={handleFocus}
-                  value={state.login}
+                  onFocus={() => handleFocus("login")}
+                  onBlur={handleBlur}
+                  value={state.nickname}
                   onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, login: value }))
+                    setState((prevState) => ({ ...prevState, nickname: value }))
                   }
                   onSubmitEditing={handleSubmit}
                 />
 
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      borderColor:
+                        isFocused === "email" ? "#FF6C00" : "#BDBDBD",
+                    },
+                  ]}
                   placeholder="Адреса електронної пошти"
                   placeholderTextColor="#BDBDBD"
-                  onFocus={handleFocus}
+                  onFocus={() => handleFocus("email")}
+                  onBlur={handleBlur}
                   value={state.email}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, email: value }))
@@ -96,11 +136,18 @@ const keyboardHide = () => {
                 />
 
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      borderColor:
+                        isFocused === "password" ? "#FF6C00" : "#BDBDBD",
+                    },
+                  ]}
                   placeholder="Пароль"
                   placeholderTextColor="#BDBDBD"
-                  secureTextEntry={true}
-                  onFocus={handleFocus}
+                  secureTextEntry={!state.showPassword}
+                  onFocus={() => handleFocus("password")}
+                  onBlur={handleBlur}
                   value={state.password}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, password: value }))
@@ -108,7 +155,11 @@ const keyboardHide = () => {
                   onSubmitEditing={handleSubmit}
                 />
 
-                <TouchableOpacity style={styles.password} activeOpacity={0.75}>
+                <TouchableOpacity
+                  style={styles.password}
+                  activeOpacity={0.75}
+                  onPress={togglePasswordVisibility}
+                >
                   <Text style={styles.showPassword}>Показати</Text>
                 </TouchableOpacity>
               </View>
@@ -141,8 +192,9 @@ const keyboardHide = () => {
               </Text>
             </TouchableOpacity>
           </View>
+          {error && <Error errorMessage={error} resetError={resetError} />}
         </ImageBackground>
-       </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 }
@@ -256,6 +308,3 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
 });
-{
-  /* <AntDesign name="closecircleo" size={24} color="black" />; */
-}

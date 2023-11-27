@@ -12,15 +12,6 @@ export default MapScreen = ({ route, navigation }) => {
   const latitude = route.params[0].location.latitude;
   const longitude = route.params[0].location.longitude;
 
-// const latitude = 37.78825;
-// const longitude = -122.4324;
-
-  console.log(
-    " MapScreen Location[] >>>>>>>>>>>>>>>>>   ",
-    latitude,
-    longitude
-  );
-
   return (
     <View style={{ flex: 1 }}>
       <MapView
@@ -28,8 +19,8 @@ export default MapScreen = ({ route, navigation }) => {
         initialRegion={{
           latitude,
           longitude,
-          latitudeDelta: 0.02,
-          longitudeDelta: 0.02,
+          latitudeDelta: 0.001,
+          longitudeDelta: 0.006,
         }}
       >
         

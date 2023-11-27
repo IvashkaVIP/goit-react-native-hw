@@ -11,42 +11,64 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { authSignIn } from "../../redux/auth/authOperations";
+import Error from "../../components/Utils/error";
 
 const initialState = {
-  email: '',
-  password: '',
-}
-
-export default function LoginScreen({navigation}) {
-  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [state, setState] = useState(initialState);
-
-  const keyboardHide = () => {
-  setIsShowKeyboard(false);
-  Keyboard.dismiss();
+  email: "",
+  password: "",
+  showPassword: false,
 };
 
+export default function LoginScreen({ navigation }) {
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [isFocused, setIsFocused] = useState("");
+  const [error, setError] = useState("");
+  const [state, setState] = useState(initialState);
+
+  const dispatch = useDispatch();
+
+  const resetError = () => {
+    setError('');
+  };
+
+  const handleLoginBtnPress = async () => {
+    try {
+      await dispatch(authSignIn(state));
+      setState(initialState);
+    } catch (er) {      
+      setError(er.message);
+    }
+  };  
   
-  const handleFocus = () => {
-    setIsShowKeyboard(true);    
+  const togglePasswordVisibility = () => {
+    setState((prevState) => ({
+      ...prevState,
+      showPassword: !prevState.showPassword,
+    }));
+  };
+  
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
   };
 
   const handleSubmit = () => {
-    setIsShowKeyboard(false);    
-    
-  }
-
-  const handleLoginBtnPress = () => {
-    console.log("LoginBtnPress >>>>>> ");
-    console.log(state);
-    setState(initialState);
-    navigation.navigate("Home");
-    
+    setIsShowKeyboard(false);
   };
 
   const handleRegisterBtnPress = () => {
-    console.log("RegistrationBtnPress >>>>>> ");
     navigation.navigate("Registration");
+  };
+
+  const handleFocus = (name) => {
+    setIsShowKeyboard(true);
+    setIsFocused(name);
+  };
+
+  const handleBlur = () => {
+    setIsFocused("");
   };
 
   return (
@@ -67,10 +89,17 @@ export default function LoginScreen({navigation}) {
 
               <View style={styles.form}>
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      borderColor:
+                        isFocused === "email" ? "#FF6C00" : "#BDBDBD",
+                    },
+                  ]}
                   placeholder="Адреса електронної пошти"
                   placeholderTextColor="#BDBDBD"
-                  onFocus={handleFocus}
+                  onFocus={() => handleFocus("email")}
+                  onBlur={handleBlur}
                   value={state.email}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, email: value }))
@@ -79,11 +108,18 @@ export default function LoginScreen({navigation}) {
                 />
 
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      borderColor:
+                        isFocused === "password" ? "#FF6C00" : "#BDBDBD",
+                    },
+                  ]}
                   placeholder="Пароль"
                   placeholderTextColor="#BDBDBD"
-                  secureTextEntry={true}
-                  onFocus={handleFocus}
+                  secureTextEntry={!state.showPassword}
+                  onFocus={() => handleFocus("password")}
+                  onBlur={handleBlur}
                   value={state.password}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, password: value }))
@@ -91,7 +127,11 @@ export default function LoginScreen({navigation}) {
                   onSubmitEditing={handleSubmit}
                 />
 
-                <TouchableOpacity style={styles.password} activeOpacity={0.75}>
+                <TouchableOpacity
+                  style={styles.password}
+                  activeOpacity={0.75}
+                  onPress={togglePasswordVisibility}
+                >
                   <Text style={styles.showPassword}>Показати</Text>
                 </TouchableOpacity>
               </View>
@@ -125,8 +165,9 @@ export default function LoginScreen({navigation}) {
               </Text>
             </TouchableOpacity>
           </View>
+          {error && <Error errorMessage={error} resetError={resetError} />}
         </ImageBackground>
-        </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 }
