@@ -26,6 +26,7 @@ export const authSignUp =
     } catch (err) {
       console.log("err", err);
       console.log("err.message", err.message);
+      throw new Error(err.message);
     }
   };
 export const authSignIn =
@@ -36,6 +37,7 @@ export const authSignIn =
     } catch (err) {
       console.log("err", err);
       console.log("err.message", err.message);
+      throw new Error(err.message);
     }
   };
 

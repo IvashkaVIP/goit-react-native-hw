@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { authSignIn } from "../../redux/auth/authOperations";
+import Error from "../../components/Utils/error";
 
 const initialState = {
   email: "",
@@ -23,22 +24,31 @@ const initialState = {
 export default function LoginScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [isFocused, setIsFocused] = useState("");
+  const [error, setError] = useState("");
   const [state, setState] = useState(initialState);
 
   const dispatch = useDispatch();
 
+  const resetError = () => {
+    setError('');
+  };
+
+  const handleLoginBtnPress = async () => {
+    try {
+      await dispatch(authSignIn(state));
+      setState(initialState);
+    } catch (er) {      
+      setError(er.message);
+    }
+  };  
+  
   const togglePasswordVisibility = () => {
     setState((prevState) => ({
       ...prevState,
       showPassword: !prevState.showPassword,
     }));
   };
-
-  const handleLoginBtnPress = () => {
-    dispatch(authSignIn(state));
-    setState(initialState);
-  };
-
+  
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
@@ -155,6 +165,7 @@ export default function LoginScreen({ navigation }) {
               </Text>
             </TouchableOpacity>
           </View>
+          {error && <Error errorMessage={error} resetError={resetError} />}
         </ImageBackground>
       </View>
     </TouchableWithoutFeedback>

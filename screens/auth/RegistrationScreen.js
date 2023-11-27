@@ -14,6 +14,7 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { authSignUp } from "../../redux/auth/authOperations";
+import Error from "../../components/Utils/error";
 
 const initialState = {
   nickname: "",
@@ -24,21 +25,29 @@ const initialState = {
 
 export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [isFocused, setIsFocused] = useState('');
+  const [isFocused, setIsFocused] = useState("");
+  const [error, setError] = useState("");
   const [state, setState] = useState(initialState);
-
   const dispatch = useDispatch();
+
+  const resetError = () => {
+    setError('');
+  };
+  
+  const handleRegisterBtnPress = async () => {
+    try {
+      await dispatch(authSignUp(state));
+      setState(initialState);
+    } catch (er) {
+      setError(er.message);
+    }
+  };
 
   const togglePasswordVisibility = () => {
     setState((prevState) => ({
       ...prevState,
       showPassword: !prevState.showPassword,
     }));
-  };
-
-  const handleRegisterBtnPress = () => {
-    dispatch(authSignUp(state));
-    setState(initialState);
   };
 
   const handleSubmit = () => {
@@ -60,8 +69,8 @@ export default function RegistrationScreen({ navigation }) {
   };
 
   const handleBlur = () => {
-    setIsFocused('');
-  }
+    setIsFocused("");
+  };
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -129,7 +138,10 @@ export default function RegistrationScreen({ navigation }) {
                 <TextInput
                   style={[
                     styles.input,
-                    { borderColor: isFocused==='password' ? "#FF6C00" : "#BDBDBD" },
+                    {
+                      borderColor:
+                        isFocused === "password" ? "#FF6C00" : "#BDBDBD",
+                    },
                   ]}
                   placeholder="Пароль"
                   placeholderTextColor="#BDBDBD"
@@ -180,6 +192,7 @@ export default function RegistrationScreen({ navigation }) {
               </Text>
             </TouchableOpacity>
           </View>
+          {error && <Error errorMessage={error} resetError={resetError} />}
         </ImageBackground>
       </View>
     </TouchableWithoutFeedback>

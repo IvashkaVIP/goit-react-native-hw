@@ -4,27 +4,26 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 import { FlatList } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import { authSignOutUser } from "../../redux/auth/authOperations";
-import { doc, updateDoc, getDocs, collection } from "firebase/firestore";
-import { db, auth } from "../../firebase/config";
+import { getDocs, collection } from "firebase/firestore";
+import { db } from "../../firebase/config";
 import { getUserEmail, getUserNick } from "../../redux/auth/authSelectors";
+import { useIsFocused } from "@react-navigation/native";
 
 const DefaultScreenPosts = ({ route, navigation }) => {
+  const isFocused = useIsFocused();
   const [posts, setPosts] = useState([]);
   const dispatch = useDispatch();
   const nickName = useSelector(getUserNick);
   const email = useSelector(getUserEmail);
-  const signOut = () => {
-    dispatch(authSignOutUser());
-  };
 
   const getAllPosts = async () => {
     try {
       const snapshot = await getDocs(collection(db, "posts"));
-      const documents = await Promise.all (
+      const documents = await Promise.all(
         snapshot.docs.map(async (doc) => {
-          const comments = (
-            await getDocs(collection(db, `posts/${doc.id}/comments`))
-          ).size ?? 0;
+          const comments =
+            (await getDocs(collection(db, `posts/${doc.id}/comments`))).size ??
+            0;
           return {
             id: doc.id,
             ...doc.data(),
@@ -38,10 +37,9 @@ const DefaultScreenPosts = ({ route, navigation }) => {
       console.log(error);
       throw error;
     }
-  };
+  };  
 
-  useEffect(() => {
-    getAllPosts();
+  useEffect(() => {        
     navigation.setOptions({
       headerTitle: "Публікації",
       headerTintColor: "#212121",
@@ -63,7 +61,16 @@ const DefaultScreenPosts = ({ route, navigation }) => {
       ),
     });
   }, []);
+  
+  useEffect(() => {
+    getAllPosts();
+  }, [isFocused]);
+  
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
 
+  
   return (
     <View style={styles.container}>
       {/* ---------------------------------------------------- authUser */}
