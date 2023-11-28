@@ -4,7 +4,8 @@ const initialState = {
     userId: null,
     nickname: null,    
     email: null, 
-    stateChange: null    
+    stateChange: null,   
+    isLoading: true
 };
 
 export const authSlice = createSlice({
@@ -21,6 +22,12 @@ export const authSlice = createSlice({
       ...state,
       stateChange: payload.stateChange,
     }),
+    setIsLoading: (state, { payload }) => ({
+      ...state,
+      isLoading: payload.isLoading,
+    }),
     authSignOut: () => initialState,
   },
 });
+
+export const { setIsLoading } = authSlice.actions;

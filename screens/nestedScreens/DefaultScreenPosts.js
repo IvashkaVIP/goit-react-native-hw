@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, ActivityIndicator } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { FlatList } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import { authSignOutUser } from "../../redux/auth/authOperations";
+import { setIsLoading } from "../../redux/auth/authSlice";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../firebase/config";
-import { getUserEmail, getUserNick } from "../../redux/auth/authSelectors";
+import { getUserEmail, getUserNick, getIsLoading } from "../../redux/auth/authSelectors";
 import { useIsFocused } from "@react-navigation/native";
 
 const DefaultScreenPosts = ({ route, navigation }) => {
-  const isFocused = useIsFocused();
-  const [posts, setPosts] = useState([]);
-  const dispatch = useDispatch();
+  const [posts, setPosts] = useState([]);  
+  const isFocused = useIsFocused();  
+  const dispatch = useDispatch();    
   const nickName = useSelector(getUserNick);
   const email = useSelector(getUserEmail);
+  const isLoading = useSelector(getIsLoading);
 
   const getAllPosts = async () => {
     try {
@@ -31,15 +33,17 @@ const DefaultScreenPosts = ({ route, navigation }) => {
           };
         })
       );
-
-      setPosts(documents);
+      setPosts(documents);     
     } catch (error) {
       console.log(error);
       throw error;
+    } finally {
+      dispatch(setIsLoading({ isLoading: false }));
     }
   };  
 
-  useEffect(() => {        
+  useEffect(() => {     
+    dispatch(setIsLoading({ isLoading: true }));
     navigation.setOptions({
       headerTitle: "Публікації",
       headerTintColor: "#212121",
@@ -56,14 +60,14 @@ const DefaultScreenPosts = ({ route, navigation }) => {
           style={{ marginRight: 10 }}
           name="exit-outline"
           size={24}
-          color="#BDBDBD"
+          color="#BDBDBD"r
         />
       ),
     });
   }, []);
   
-  useEffect(() => {
-    getAllPosts();
+  useEffect(() => {    
+    getAllPosts();    
   }, [isFocused]);
   
   const signOut = () => {
@@ -85,57 +89,69 @@ const DefaultScreenPosts = ({ route, navigation }) => {
         </View>
       </View>
       {/* ----------------------------------------------------------PostsList */}
-      <FlatList
-        data={posts}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 32 }}>
-            <Image source={{ uri: item.photo }} style={styles.image} />
-            <Text style={styles.textPhoto}>{item.name}</Text>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              {/* -----------------------------------------  Comments */}
-              <View style={{ flexDirection: "row" }}>
-                <Feather
-                  name="message-circle"
-                  size={24}
-                  color= { item.comments ? "#FF6C00" : "#BDBDBD"  }
-                  style={{
-                    marginRight: 10,
-                  }}
-                  onPress={() =>
-                    navigation.navigate("Comments", {
-                      postId: item.id,
-                      imageUrl: item.photo,
-                    })
-                  }
-                />
-                <Text style={styles.textPhoto}>{item.comments}</Text>
-              </View>
 
-              <View style={{ flexDirection: "row" }}>
-                <Feather
-                  name="map-pin"
-                  size={24}
-                  color="#BDBDBD"
-                  style={{ marginRight: 10 }}
-                  onPress={() => navigation.navigate("Map", posts)}
-                />
-                <Text
-                  style={{
-                    ...styles.textPhoto,
-                    textDecorationLine: "underline",
-                  }}
-                  onPress={() => navigation.navigate("Map", posts)}
-                >
-                  {item.description}
-                </Text>
+      {isLoading ? (
+         <ActivityIndicator
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+            size="large"
+            color="#0000ff"
+          />        
+      ) : (
+        <FlatList
+          data={posts}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={{ marginBottom: 32 }}>
+              <Image source={{ uri: item.photo }} style={styles.image} />
+              <Text style={styles.textPhoto}>{item.name}</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                {/* -----------------------------------------  Comments */}
+                <View style={{ flexDirection: "row" }}>
+                  <Feather
+                    name="message-circle"
+                    size={24}
+                    color={item.comments ? "#FF6C00" : "#BDBDBD"}
+                    style={{
+                      marginRight: 10,
+                    }}
+                    onPress={() =>
+                      navigation.navigate("Comments", {
+                        postId: item.id,
+                        imageUrl: item.photo,
+                      })
+                    }
+                  />
+                  <Text style={styles.textPhoto}>{item.comments}</Text>
+                </View>
+
+                <View style={{ flexDirection: "row" }}>
+                  <Feather
+                    name="map-pin"
+                    size={24}
+                    color="#BDBDBD"
+                    style={{ marginRight: 10 }}
+                    onPress={() => navigation.navigate("Map", posts)}
+                  />
+                  <Text
+                    style={{
+                      ...styles.textPhoto,
+                      textDecorationLine: "underline",
+                    }}
+                    onPress={() => navigation.navigate("Map", posts)}
+                  >
+                    {item.description}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-        )}
-      />
+          )}
+        />
+      )}
     </View>
   );
 };
@@ -143,7 +159,7 @@ const DefaultScreenPosts = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 16,

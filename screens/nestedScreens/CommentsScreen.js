@@ -9,11 +9,13 @@ import {
   TextInput,
   Keyboard,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { Feather } from "@expo/vector-icons";
-import { useSelector } from "react-redux";
-import { getUserNick, getUserId } from "../../redux/auth/authSelectors";
+import { useSelector, useDispatch } from "react-redux";
+import { getUserNick, getIsLoading } from "../../redux/auth/authSelectors";
+import { setIsLoading } from "../../redux/auth/authSlice";
 import { db } from "../../firebase/config";
 import {
   addDoc,
@@ -29,7 +31,9 @@ export default CommentsScreen = ({ route, navigation }) => {
   const [comment, setComment] = useState("");
   const [allComments, setAllComments] = useState([]);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const dispatch = useDispatch();
   const nickName = useSelector(getUserNick);
+  const isLoading = useSelector(getIsLoading);
 
   const creatComment = async () => {
     try {
@@ -49,19 +53,21 @@ export default CommentsScreen = ({ route, navigation }) => {
 
   const getAllComments = async () => {
     try {
-      
+      dispatch(setIsLoading({ isLoading: true }));
       const commentsRef = collection(db, "posts", postId, "comments");
       const commentsQuery = query(commentsRef, orderBy("date", "desc"));
-      const snapshot = await getDocs(commentsQuery);      
+      const snapshot = await getDocs(commentsQuery);
 
       const documents = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      setAllComments(documents);      
+      setAllComments(documents);
     } catch (error) {
       console.log(error);
       throw error;
+    } finally {
+      dispatch(setIsLoading({ isLoading: false }));
     }
   };
 
@@ -83,34 +89,42 @@ export default CommentsScreen = ({ route, navigation }) => {
       <View style={styles.container}>
         <Image source={{ uri: imageUrl }} style={styles.image} />
         {/* ----------------------------------------------------------CommentsList */}
-        <FlatList
-          style={styles.flatListComments}
-          data={allComments}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.wrapperComment}>
-              <View style={styles.textWrapperComment}>
-                <Text style={styles.textComment}>{item.comment}</Text>
-                <Text style={styles.dateComment}>
-                  {new Intl.DateTimeFormat("ru-RU", {
-                    year: "numeric",
-                    month: "numeric",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "numeric",
-                    // second: "numeric",
-                  }).format(item.date.toDate())}
-                </Text>
+        {isLoading ? (
+          <ActivityIndicator
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+            size="large"
+            color="#0000ff"
+          />
+        ) : (
+          <FlatList
+            style={styles.flatListComments}
+            data={allComments}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.wrapperComment}>
+                <View style={styles.textWrapperComment}>
+                  <Text style={styles.textComment}>{item.comment}</Text>
+                  <Text style={styles.dateComment}>
+                    {new Intl.DateTimeFormat("ru-RU", {
+                      year: "numeric",
+                      month: "numeric",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                      // second: "numeric",
+                    }).format(item.date.toDate())}
+                  </Text>
+                </View>
+                <View style={styles.avatarWrapperComment}>
+                  <Image
+                    style={styles.avatarComment}
+                    source={require("../../assets/images/AvatarDefault.jpg")}
+                  />
+                </View>
               </View>
-              <View style={styles.avatarWrapperComment}>
-                <Image
-                  style={styles.avatarComment}
-                  source={require("../../assets/images/AvatarDefault.jpg")}
-                />
-              </View>
-            </View>
-          )}
-        />
+            )}
+          />
+        )}
 
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}

@@ -16,9 +16,15 @@ import {
   View,
   Image,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { authSignOutUser } from "../../redux/auth/authOperations";
-import { getUserNick, getUserId } from "../../redux/auth/authSelectors";
+import {
+  getUserNick,
+  getUserId,
+  getIsLoading,
+} from "../../redux/auth/authSelectors";
+import { setIsLoading } from "../../redux/auth/authSlice";
 import { db } from "../../firebase/config";
 import { getDocs, collection, query, where } from "firebase/firestore";
 
@@ -27,6 +33,7 @@ export default ProfileScreen = ({ navigation }) => {
   const [userPosts, setUserPosts] = useState([]);
   const nickName = useSelector(getUserNick);
   const userId = useSelector(getUserId);
+  const isLoading = useSelector(getIsLoading);
   const dispatch = useDispatch();
   const signOut = () => {
     dispatch(authSignOutUser());
@@ -34,6 +41,7 @@ export default ProfileScreen = ({ navigation }) => {
 
   const getUserPosts = async () => {
     try {
+      dispatch(setIsLoading({ isLoading: true }));
       const snapshot = await getDocs(
         query(collection(db, "posts"), where("userId", "==", userId))
       );
@@ -54,6 +62,8 @@ export default ProfileScreen = ({ navigation }) => {
     } catch (error) {
       console.log(error);
       throw error;
+    } finally {
+      dispatch(setIsLoading({ isLoading: false }));
     }
   };
 
@@ -105,71 +115,82 @@ export default ProfileScreen = ({ navigation }) => {
                 <Text style={styles.mainText}>{nickName}</Text>
               </View>
             </View>
-
-            <FlatList
-              data={userPosts}
-              keyExtractor={(item, index) => index.toString()}
-              style={styles.flatList}
-              renderItem={({ item }) => (
-                <View>
-                  <Image source={{ uri: item.photo }} style={styles.image} />
-                  <Text style={styles.textPhoto}>{item.name}</Text>
-                  <View // main wrapper Description
-                    style={styles.wrapperMainDescription}
-                  >
-                    <View style={{ flexDirection: "row" }}>
-                      <Feather // comments Icon
-                        name="message-circle"
-                        size={24}
-                        color={item.comments ? "#FF6C00" : "#BDBDBD"}
-                        style={{
-                          marginRight: 10,
-                        }}
-                        onPress={() =>
-                          navigation.navigate("Comments", {
-                            postId: item.id,
-                            imageUrl: item.photo,
-                          })
-                        }
-                      />
-                      <Text style={styles.textDescription}>
-                        {item.comments}
-                      </Text>
-                      <SimpleLineIcons
-                        style={styles.likeIcon}
-                        name="like"
-                        size={24}
-                        color="#BDBDBD"
-                      />
-                      <Text style={styles.textDescription}>
-                        0
-                      </Text>
-                    </View>
-
-                    <View
-                      style={{ flexDirection: "row" }} // map wrapper Description
+            {isLoading ? (
+               <ActivityIndicator
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingBottom: 50,
+                    backgroundColor: "white",
+                  }}
+                  size="large"
+                  color="#0000ff"
+                />              
+            ) : (
+              <FlatList
+                data={userPosts}
+                keyExtractor={(item, index) => index.toString()}
+                style={styles.flatList}
+                renderItem={({ item }) => (
+                  <View>
+                    <Image source={{ uri: item.photo }} style={styles.image} />
+                    <Text style={styles.textPhoto}>{item.name}</Text>
+                    <View // main wrapper Description
+                      style={styles.wrapperMainDescription}
                     >
-                      <Feather
-                        name="map-pin"
-                        size={24}
-                        color="#BDBDBD"
-                        style={{ marginRight: 10 }}
-                        onPress={() => navigation.navigate("Map", posts)}
-                      />
-                      <Text
-                        style={{
-                          ...styles.textDescription,
-                          textDecorationLine: "underline",
-                        }}
-                        onPress={() => navigation.navigate("Map", posts)}
+                      <View style={{ flexDirection: "row" }}>
+                        <Feather // comments Icon
+                          name="message-circle"
+                          size={24}
+                          color={item.comments ? "#FF6C00" : "#BDBDBD"}
+                          style={{
+                            marginRight: 10,
+                          }}
+                          onPress={() =>
+                            navigation.navigate("Comments", {
+                              postId: item.id,
+                              imageUrl: item.photo,
+                            })
+                          }
+                        />
+                        <Text style={styles.textDescription}>
+                          {item.comments}
+                        </Text>
+                        <SimpleLineIcons
+                          style={styles.likeIcon}
+                          name="like"
+                          size={24}
+                          color="#BDBDBD"
+                        />
+                        <Text style={styles.textDescription}>0</Text>
+                      </View>
+
+                      <View
+                        style={{ flexDirection: "row" }} // map wrapper Description
                       >
-                        {item.description}
-                      </Text>
+                        <Feather
+                          name="map-pin"
+                          size={24}
+                          color="#BDBDBD"
+                          style={{ marginRight: 10 }}
+                          onPress={() => navigation.navigate("Map", posts)}
+                        />
+                        <Text
+                          style={{
+                            ...styles.textDescription,
+                            textDecorationLine: "underline",
+                          }}
+                          onPress={() => navigation.navigate("Map", posts)}
+                        >
+                          {item.description}
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-              )}
-            />
+                )}
+              />
+            )}
           </KeyboardAvoidingView>
         </ImageBackground>
       </View>
