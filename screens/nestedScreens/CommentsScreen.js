@@ -51,10 +51,10 @@ export default CommentsScreen = ({ route, navigation }) => {
 
   const getAllComments = async () => {
     try {
-      const snapshot = await getDocs(
-        collection(db, "posts", postId, "comments"),
-        orderBy("date", "desc")
-      );
+      const commentsRef = collection(db, "posts", postId, "comments");
+      const commentsQuery = query(commentsRef, orderBy("date", "desc"));
+      const snapshot = await getDocs(commentsQuery);
+
       const documents = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
