@@ -14,13 +14,14 @@ import { FlatList } from "react-native-gesture-handler";
 import { Feather } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 import { getUserNick, getUserId } from "../../redux/auth/authSelectors";
-import { db, storage } from "../../firebase/config";
+import { db } from "../../firebase/config";
 import {
   addDoc,
   getDocs,
   collection,
   orderBy,
   serverTimestamp,
+  query,
 } from "firebase/firestore";
 
 export default CommentsScreen = ({ route, navigation }) => {
@@ -29,9 +30,6 @@ export default CommentsScreen = ({ route, navigation }) => {
   const [allComments, setAllComments] = useState([]);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const nickName = useSelector(getUserNick);
-  const userId = useSelector(getUserId);
-  
-  
 
   const creatComment = async () => {
     try {
@@ -51,15 +49,16 @@ export default CommentsScreen = ({ route, navigation }) => {
 
   const getAllComments = async () => {
     try {
-      const snapshot = await getDocs(
-        collection(db, "posts", postId, "comments"),
-        orderBy("date", "desc")
-      );
+      
+      const commentsRef = collection(db, "posts", postId, "comments");
+      const commentsQuery = query(commentsRef, orderBy("date", "desc"));
+      const snapshot = await getDocs(commentsQuery);      
+
       const documents = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      setAllComments(documents);
+      setAllComments(documents);      
     } catch (error) {
       console.log(error);
       throw error;
