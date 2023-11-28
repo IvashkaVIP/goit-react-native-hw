@@ -1,14 +1,4 @@
-import {
-  KeyboardAvoidingView,
-  TouchableOpacity,
-  TextInput,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  View,
-  Keyboard,
-  TouchableWithoutFeedback,
-} from "react-native";
+import {Text} from "react-native";
 import { useState, useEffect } from "react";
 
 export default function Error({ resetError, errorMessage }) {
@@ -34,10 +24,8 @@ export default function Error({ resetError, errorMessage }) {
             position: "absolute",
             top: "50%",
             left: "50%",
-            marginLeft: -140,
-            // marginTop: -50,
+            marginLeft: -140,            
             width: 280,
-
             backgroundColor: "red",
             borderRadius: 25,
             color: "white",
