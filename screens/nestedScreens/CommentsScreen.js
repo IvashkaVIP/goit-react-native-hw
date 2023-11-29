@@ -31,6 +31,7 @@ export default CommentsScreen = ({ route, navigation }) => {
   const [comment, setComment] = useState("");
   const [allComments, setAllComments] = useState([]);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  // const intl = useIntl();
   const dispatch = useDispatch();
   const nickName = useSelector(getUserNick);
   const isLoading = useSelector(getIsLoading);
@@ -84,6 +85,18 @@ export default CommentsScreen = ({ route, navigation }) => {
     Keyboard.dismiss();
   };
 
+  const formatDate = (timestamp) => {
+    const dateObject = timestamp.toDate();
+    const day = dateObject.getDate();
+    const month = dateObject.getMonth() + 1; // Месяцы начинаются с 0
+    const year = dateObject.getFullYear();
+    const hours = dateObject.getHours();
+    const minutes = dateObject.getMinutes();
+
+    const formattedDate = `${day}.${month}.${year} ${hours}:${minutes}`;
+    return formattedDate;
+  };
+
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
@@ -105,14 +118,7 @@ export default CommentsScreen = ({ route, navigation }) => {
                 <View style={styles.textWrapperComment}>
                   <Text style={styles.textComment}>{item.comment}</Text>
                   <Text style={styles.dateComment}>
-                    {new Intl.DateTimeFormat("ru-RU", {
-                      year: "numeric",
-                      month: "numeric",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                      // second: "numeric",
-                    }).format(item.date.toDate())}
+                    {formatDate(item.date)}
                   </Text>
                 </View>
                 <View style={styles.avatarWrapperComment}>
