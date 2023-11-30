@@ -88,10 +88,10 @@ export default CommentsScreen = ({ route, navigation }) => {
   const formatDate = (timestamp) => {
     const dateObject = timestamp.toDate();
     const day = dateObject.getDate();
-    const month = dateObject.getMonth() + 1; // Месяцы начинаются с 0
+    const month = dateObject.getMonth() + 1; 
     const year = dateObject.getFullYear();
     const hours = dateObject.getHours();
-    const minutes = dateObject.getMinutes();
+    const minutes = dateObject.getMinutes();a
 
     const formattedDate = `${day}.${month}.${year} ${hours}:${minutes}`;
     return formattedDate;

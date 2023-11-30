@@ -10,6 +10,7 @@ import {
   View,
   Keyboard,
   TouchableWithoutFeedback,
+  Dimensions
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
@@ -29,6 +30,8 @@ export default function RegistrationScreen({ navigation }) {
   const [error, setError] = useState("");
   const [state, setState] = useState(initialState);
   const dispatch = useDispatch();
+  const { width, height } = Dimensions.get("window");  
+  // console.log(height)
 
   const resetError = () => {
     setError('');
@@ -173,7 +176,7 @@ export default function RegistrationScreen({ navigation }) {
             }}
           >
             <TouchableOpacity
-              style={styles.btn}
+              style={{...styles.btn, marginTop: height / 20}}
               activeOpacity={0.75}
               onPress={handleRegisterBtnPress}
             >
@@ -181,7 +184,7 @@ export default function RegistrationScreen({ navigation }) {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.registration}>
-              <Text style={styles.textRegistration}>
+              <Text style={{...styles.textRegistration,  marginBottom: height / 20}}>
                 Вже є акаунт?{" "}
                 <Text
                   style={styles.textRegistration}
@@ -279,8 +282,7 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Regular",
     fontSize: 16,
   },
-  btn: {
-    marginTop: 46,
+  btn: {    
     marginHorizontal: 16,
     backgroundColor: "#FF6C00",
     height: 50,
@@ -301,8 +303,7 @@ const styles = StyleSheet.create({
   textRegistration: {
     color: "#1B4371",
     fontFamily: "Roboto-Regular",
-    fontSize: 16,
-    marginBottom: 78,
+    fontSize: 16,    
   },
   bottomFieldWrap: {
     backgroundColor: "#FFFFFF",
